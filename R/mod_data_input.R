@@ -132,7 +132,7 @@ mod_data_input_server <- function(id, name_table){
     })
     evolve_data_filtered <- reactiveVal()
     observeEvent(input$load_example,
-                 evolve_data_filtered(readRDS("inst/app/www/input_example.rds")))
+                 evolve_data_filtered(readRDS(app_sys("app/www/input_example.rds"))))
     observeEvent(input$submit_files,
                  evolve_data_filtered(evolve_data_temp()))
 
@@ -186,7 +186,7 @@ mod_data_input_server <- function(id, name_table){
         paste("VCF_examples", "zip", sep = ".")
       },
       content <- function(file) {
-        file.copy("www/VCF_examples.zip", file)
+        file.copy(app_sys("app/www/VCF_examples.zip"), file)
       },
       contentType = "application/zip"
     )

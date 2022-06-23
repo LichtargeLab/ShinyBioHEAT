@@ -46,7 +46,7 @@ mod_EA_search_server <- function(id, name_table){
         paste("MG1655_EA", "tar", "xz", sep = ".")
       },
       content <- function(file) {
-        file.copy("inst/app/www/MG1655_EA.tar.xz", file)
+        file.copy(app_sys("app/www/MG1655_EA.tar.xz"), file)
       },
       contentType = "application/tar.xz"
     )

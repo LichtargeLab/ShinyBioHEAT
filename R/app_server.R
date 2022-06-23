@@ -5,7 +5,7 @@
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
-  name_table <- readRDS("inst/app/www/MG1655_name_table.rds")
+  name_table <- readRDS(app_sys("app/www/MG1655_name_table.rds"))
   processed_evolve <- mod_data_input_server("input_page", name_table = name_table)
   random_bg <- mod_random_mut_server("random")
   mod_EA_analysis_server("EA_analysis", processed_evolve = processed_evolve, random_bg = random_bg)
