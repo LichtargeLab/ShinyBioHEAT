@@ -11,7 +11,7 @@ SUBtoEA <- function(input_file_name, input_file_path, name_table, EA_list) {
     file = input_file_path
   ) %>%
     dplyr::mutate(strain = stringr::str_split(strain, ".csv", simplify = TRUE)[, 1]) %>%
-    dplyr::mutate(data = purrr::map(file, readr::read_csv)) %>%
+    dplyr::mutate(data = purrr::map(file, ~readr::read_csv(., col_types = "cc"))) %>%
     tidyr::unnest(cols = c(data)) %>%
     Annotate_SUB_file(., EA_list, name_table, string_input = FALSE) %>%
     dplyr::select(-file) %>%
