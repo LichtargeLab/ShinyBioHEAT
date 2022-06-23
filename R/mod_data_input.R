@@ -26,14 +26,14 @@ mod_data_input_ui <- function(id){
                width = 9,
                fluidRow(
                  column(6,
-                        plotOutput(outputId = ns("evolve.plot"))),
+                        plotOutput(outputId = ns("evolve_plot"))),
                  column(6, align = "center",
                         fluidRow(align = "left",
                                  shinyjs::hidden(textOutput(outputId = "ref_check")),
                                  tags$style("#ref_check {color:red}")),
-                        DT::dataTableOutput(outputId = ns("evolve.mut.non")),
+                        DT::dataTableOutput(outputId = ns("evolve_mut_non")),
                         tags$br(),
-                        shinyjs::hidden(downloadButton(outputId = ns("download.evolve.mut.detail"),
+                        shinyjs::hidden(downloadButton(outputId = ns("download_evolve_mut_detail"),
                                                        label = "Download detailed annotated mutations"))
                  )
                )
@@ -88,7 +88,7 @@ mod_data_input_server <- function(id, name_table){
       }
     })
     ## Gather mutations in evolve strains, then annotate
-    evolve.data <- eventReactive(input$submit_files, {
+    evolve_data <- eventReactive(input$submit_files, {
       req(input$evolve_files)
       withProgress(
         message = "Annotating evolve strains",
@@ -101,7 +101,7 @@ mod_data_input_server <- function(id, name_table){
     })
 
     ## Gather mutations in founder strains, if any, then annotate
-    founder.data <- eventReactive(input$submit_files, {
+    founder_data <- eventReactive(input$submit_files, {
       req(input$founder_files)
       withProgress(
         message = "Annotating founder strains",
@@ -114,45 +114,45 @@ mod_data_input_server <- function(id, name_table){
     })
 
     ## Remove founder mutations from evolve strains
-    evolve.data.temp <- reactive({
+    evolve_data_temp <- reactive({
       if (is.null(input$founder_files)) {
-        evolve.data() %>%
+        evolve_data() %>%
           dplyr::filter(match_reference == TRUE) %>%
           CleanEAOutput()
       } else {
         if (input$input_type == "VCF") {
-          temp <- dplyr::anti_join(evolve.data(), founder.data(), by = c("POS", "REF", "ALT"))
+          temp <- dplyr::anti_join(evolve_data(), founder_data(), by = c("POS", "REF", "ALT"))
         } else {
-          temp <- dplyr::anti_join(evolve.data(), founder.data(), by = c("locus_tag", "SUB"))
+          temp <- dplyr::anti_join(evolve_data(), founder_data(), by = c("locus_tag", "SUB"))
         }
         temp %>%
           dplyr::filter(match_reference == TRUE) %>%
           CleanEAOutput()
       }
     })
-    evolve.data.filtered <- reactiveVal()
+    evolve_data_filtered <- reactiveVal()
     observeEvent(input$load_example,
-                 evolve.data.filtered(readRDS("inst/app/www/input_example.rds")))
+                 evolve_data_filtered(readRDS("inst/app/www/input_example.rds")))
     observeEvent(input$submit_files,
-                 evolve.data.filtered(evolve.data.temp()))
+                 evolve_data_filtered(evolve_data_temp()))
 
-    output$evolve.mut.non <- DT::renderDataTable(server = TRUE, {
-      req(evolve.data.filtered())
-      evolve.data.filtered() %>%
+    output$evolve_mut_non <- DT::renderDataTable(server = TRUE, {
+      req(evolve_data_filtered())
+      evolve_data_filtered() %>%
         dplyr::select(strain, gene, locus_tag, SUB, EA) %>%
         DisplayDT(download.name = "coding_mutations_in_evolve_strains")
     })
-    output$evolve.plot <- renderPlot({
-      req(evolve.data.filtered())
-      evolve.data.filtered() %>%
+    output$evolve_plot <- renderPlot({
+      req(evolve_data_filtered())
+      evolve_data_filtered() %>%
         GraphWholeGenomeEADist()
     })
 
 
     ## Ref check and Conditions for hide/show download button
     observeEvent(input$submit_files, {
-      req(evolve.data.temp())
-      ref_mismatch_count <- sum(evolve.data()$match_reference == FALSE)
+      req(evolve_data_temp())
+      ref_mismatch_count <- sum(evolve_data()$match_reference == FALSE)
       if (ref_mismatch_count != 0) {
         ref_check_text <- paste0("There are ", ref_mismatch_count, " entry(ies) in the evolved strain file(s) that don't match the reference genome. Please call mutations against the correct reference. Check detailed annotated mutations for more information.")
         showModal(modalDialog(
@@ -172,10 +172,10 @@ mod_data_input_server <- function(id, name_table){
       },
       content = function(file) {
         if (is.null(input$founder_files) || input$founder_files == "") {
-          openxlsx::write.xlsx(list(evolve.data()), file,
+          openxlsx::write.xlsx(list(evolve_data()), file,
                                sheetName = "evolve")
         } else {
-          openxlsx::write.xlsx(list(evolve.data(), founder.data()), file,
+          openxlsx::write.xlsx(list(evolve_data(), founder_data()), file,
                                sheetName = c("evolve", "founder"))
         }
       }
@@ -190,7 +190,7 @@ mod_data_input_server <- function(id, name_table){
       },
       contentType = "application/zip"
     )
-    return(evolve.data.filtered)
+    return(evolve_data_filtered)
   })
 }
 
