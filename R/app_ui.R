@@ -9,8 +9,19 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    fluidPage(
-      h1("ShinyBioHEAT")
+    navbarPage("E. coli driver gene prediction",
+               theme = shinythemes::shinytheme("cerulean"),
+               mod_intro_ui("intro"),
+               tabPanel("EA Analysis",
+                        tabsetPanel(
+                          mod_data_input_ui("input_page"),
+                          mod_random_mut_ui("random"),
+                          mod_EA_analysis_ui("EA_analysis")
+                        )),
+               mod_EA_search_ui("search"),
+               # structure_UI("structure"),
+               shinyjs::useShinyjs(),
+               shinyjs::extendShinyjs(text = "shinyjs.browseURL = function(url) {window.open(url,'_blank');}", functions = 'browseURL')
     )
   )
 }
