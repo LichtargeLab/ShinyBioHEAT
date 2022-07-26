@@ -11,16 +11,12 @@
 #' @param n Number of simulated mutations
 #' @param ti Number of transition mutations in the simulation. A integer between 0 and n.
 #' @param cds_only If is TRUE, only mutations in the cds regions will be simulated. Default is TRUE.
-#' @param seed Seed for random number generation. Used for reproducibility.
 #' @param replace True or False. Whether a same nucleotide position can be mutated multiple times. Set to FALSE by default.
 #'
 #' @return The return value, if any, from executing the function.
 #'
 #' @export
-RandomMut <- function(ref_table, DNA_seq, ID = "Genome", n, ti = n%/%2, cds_only = TRUE, seed = NULL, replace = FALSE) {
-  if (!is.null(seed)) {
-    set.seed(seed)
-  }
+RandomMut <- function(ref_table, DNA_seq, ID = "Genome", n, ti = n%/%2, cds_only = TRUE, replace = FALSE) {
   # Pick positions to be mutated
   if (cds_only == TRUE) {
     cds.ref <- ref_table %>%
