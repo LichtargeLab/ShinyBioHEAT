@@ -29,7 +29,7 @@ mod_EA_analysis_ui <- function(id){
                              selected = "EA_KS rank", selectize = FALSE)
                ),
                actionButton(ns("run_analysis"),
-                            label = "EA analysis", width = "50%", class = "btn-primary"),
+                            label = "EA analysis", width = "100%", class = "btn-primary"),
                tags$hr(style="border-color: black;"),
                uiOutput(outputId = ns("Stringdb"))
              ),
@@ -241,7 +241,7 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg){
         sliderInput(session$ns("string_gene_count"), label = "Top genes to run String analysis", min = 1, max = nrow(gene_rankings_df()),
                     value = ceiling(nrow(gene_rankings_df())/20),
                     step = 1),
-        actionButton(inputId = session$ns("visit_Stringdb"), label = "STRING Analysis", width = "50%", class = "btn-primary")
+        actionButton(inputId = session$ns("visit_Stringdb"), label = "STRING Analysis", width = "100%", class = "btn-primary")
 
       )
     })
@@ -256,6 +256,7 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg){
       string_link <- readLines(string_api)
       shinyjs::js$browseURL(string_link)
     })
+    return(gene_rankings_df)
   })
 }
 

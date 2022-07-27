@@ -76,7 +76,7 @@ mod_random_mut_ui <- function(id){
                        multiple = TRUE,
                        accept = ".vcf"
                      ),
-                     actionButton(inputId = ns("submit_vcf"), label = "Submit VCF files", align = "center", class = "btn-primary")
+                     actionButton(inputId = ns("submit_vcf"), width = "100%", label = "Submit VCF files", align = "center", class = "btn-primary")
                    )),
                # SUB input UI
                div(id = ns("SUB_ui"),
@@ -87,7 +87,7 @@ mod_random_mut_ui <- function(id){
                        multiple = TRUE,
                        accept = ".csv"
                      ),
-                     actionButton(inputId = ns("submit_sub"), label = "Submit SUB files", align = "center", class = "btn-primary")
+                     actionButton(inputId = ns("submit_sub"), width = "100%", label = "Submit SUB files", align = "center", class = "btn-primary")
                    ))
              ),
              mainPanel(
