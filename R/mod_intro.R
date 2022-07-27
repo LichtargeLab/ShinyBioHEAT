@@ -56,7 +56,16 @@ mod_intro_ui <- function(id){
     tags$h3(tags$b("Acknowledgement")),
     tags$p("This research is based upon work supported [in part] by the Office of the Director of National Intelligence (ODNI), Intelligence Advanced Research Projects Activity (IARPA) under BAA-17-01, contract #2019-19071900001. The views and conclusions contained herein are those of the authors and should not be interpreted as necessarily representing the official policies, either expressed or implied, of ODNI, IARPA, or the U.S. Government."),
     tags$br(),
-    tags$h3(tags$b("References")))
+    tags$h3(tags$b("References")),
+    tags$p("1. Marciano DC, Wang C, Hsu TK, Bourquard T, Atri B, Nehring RB, Abel NS, Bowling EA, Chen TJ, Lurie PD, Katsonis P, Rosenberg SM, Herman C, Lichtarge O. Evolutionary action of mutations reveals antimicrobial resistance genes in Escherichia coli. Nat Commun. 2022 Jun 9;13(1):3189. ",
+           "[",
+           a("link", href="https://www.nature.com/articles/s41467-022-30889-1",  target="_blank", .noWS = "outside"),
+           "]"),
+    tags$p("2. Katsonis P, Lichtarge O. A formal perturbation equation between genotype and phenotype determines the Evolutionary Action of protein-coding variations on fitness. Genome Res. 2014 Dec;24(12):2050-8. ",
+           "[",
+           a("link", href="https://genome.cshlp.org/content/24/12/2050.long",  target="_blank", .noWS = "outside"),
+           "]")
+  )
 }
 
 ## To be copied in the UI
