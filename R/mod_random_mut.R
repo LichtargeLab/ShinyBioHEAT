@@ -18,7 +18,8 @@ mod_random_mut_ui <- function(id){
                  label = "Select input type",
                  choices = c("Simulate random mutations" = "simulation",
                              "Use example random mutations" = "example",
-                             "Use custom mutations" = "custom"),
+                             "Custom VCF file" = "VCF",
+                             "Custom SUB file" = "SUB"),
                  selected = "simulation"
                ),
                tags$hr(style="border-color: black;"),
@@ -66,29 +67,28 @@ mod_random_mut_ui <- function(id){
                    actionButton(ns("load_example"),
                                 label = "Load precalculated background", width = "100%", class = "btn-warning"),
                ),
-               # Custom input UI
-               div(id = ns("custom_ui"),
+               # VCF input UI
+               div(id = ns("VCF_ui"),
                    tagList(
-                     p("Upload either VCF or Substitution (SUB) files"),
                      fileInput(
-                       ns("vcf_files"),
+                       ns("VCF_files"),
                        label = "Upload VCF files for background mutations",
                        multiple = TRUE,
                        accept = ".vcf"
                      ),
-                     actionButton(inputId = ns("submit_vcf"), label = "Submit VCF files", align = "center", class = "btn-primary"),
-                     br(),
-                     br(),
-                     br(),
+                     actionButton(inputId = ns("submit_vcf"), label = "Submit VCF files", align = "center", class = "btn-primary")
+                   )),
+               # SUB input UI
+               div(id = ns("SUB_ui"),
+                   tagList(
                      fileInput(
-                       ns("sub_files"),
+                       ns("SUB_files"),
                        label = "Upload SUB files for background mutations",
                        multiple = TRUE,
                        accept = ".csv"
                      ),
                      actionButton(inputId = ns("submit_sub"), label = "Submit SUB files", align = "center", class = "btn-primary")
                    ))
-               #
              ),
              mainPanel(
                width = 9,
@@ -107,7 +107,7 @@ mod_random_mut_ui <- function(id){
 #' random_mut Server Functions
 #'
 #' @noRd
-mod_random_mut_server <- function(id){
+mod_random_mut_server <- function(id, name_table){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     bg <- reactiveVal()
@@ -149,15 +149,38 @@ mod_random_mut_server <- function(id){
     })
 
     observeEvent(input$load_example, {
-      bg(readRDS(app_sys("app/www/input_example.rds")))
+      withProgress(
+        message = "Loading data",
+        bg(readRDS(app_sys("app/www/MG1655_random_mut.rds")))
+      )
     })
 
     observeEvent(input$submit_vcf, {
-
+      req(input$VCF_files)
+      withProgress(
+        message = "Annotating VCF files",
+        VCF_df <- VCFtoEA(input$VCF_files$name, input$VCF_files$datapath,
+                          EA_list = MG1655_EA_list, ref_seq = MG1655_seq)
+      )
+      ref_mismatch_count <- sum(VCF_df$match_reference == FALSE)
+      if (ref_mismatch_count != 0) {
+        ref_check_text <- paste0("There are ", ref_mismatch_count, " entry(ies) in the evolved strain file(s) that don't match the reference genome. Please call mutations against the correct reference. Check detailed annotated mutations for more information.")
+        showModal(modalDialog(
+          title = "Check reference",
+          ref_check_text
+        ))}
+      VCF_df <- dplyr::filter(VCF_df, match_reference == TRUE)
+      bg(VCF_df)
     })
 
     observeEvent(input$submit_sub, {
-
+      req(input$SUB_files)
+      withProgress(
+        message = "Annotating SUB files",
+        SUB_df <- SUBtoEA(input$SUB_files$name, input$SUB_files$datapath,
+                          name_table = name_table, EA_list = MG1655_EA_list)
+      )
+      bg(SUB_df)
     })
 
 
@@ -206,10 +229,15 @@ mod_random_mut_server <- function(id){
       } else {
         shinyjs::hide("example_ui")
       }
-      if (input$input_type == "custom") {
-        shinyjs::show("custom_ui")
+      if (input$input_type == "VCF") {
+        shinyjs::show("VCF_ui")
       } else {
-        shinyjs::hide("custom_ui")
+        shinyjs::hide("VCF_ui")
+      }
+      if (input$input_type == "SUB") {
+        shinyjs::show("SUB_ui")
+      } else {
+        shinyjs::hide("SUB_ui")
       }
     })
     return(bg_filtered)
