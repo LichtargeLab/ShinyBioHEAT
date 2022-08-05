@@ -16,7 +16,8 @@ app_ui <- function(request) {
                         tabsetPanel(
                           mod_data_input_ui("input_page"),
                           mod_random_mut_ui("random"),
-                          mod_EA_analysis_ui("EA_analysis")
+                          mod_EA_analysis_ui("EA_analysis"),
+                          mod_gene_overlap_ui("gene_overlap")
                         )),
                mod_EA_search_ui("search"),
                # structure_UI("structure"),
