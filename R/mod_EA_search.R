@@ -50,6 +50,7 @@ mod_EA_search_server <- function(id, name_table){
       },
       contentType = "application/tar.xz"
     )
+    return(search_output)
   })
 }
 

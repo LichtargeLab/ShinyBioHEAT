@@ -8,6 +8,11 @@ app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
+
+    # Use shinyjs
+    shinyjs::useShinyjs(),
+    shinyjs::extendShinyjs(text = "shinyjs.browseURL = function(url) {window.open(url,'_blank');}", functions = 'browseURL'),
+
     # Your application UI logic
     navbarPage("E. coli driver gene prediction",
                theme = shinythemes::shinytheme("cerulean"),
@@ -20,11 +25,9 @@ app_ui <- function(request) {
                           mod_gene_overlap_ui("gene_overlap")
                         )),
                mod_EA_search_ui("search"),
-               # structure_UI("structure"),
-               shinyjs::useShinyjs(),
-               shinyjs::extendShinyjs(text = "shinyjs.browseURL = function(url) {window.open(url,'_blank');}", functions = 'browseURL')
+               mod_structure_viewer_ui("structure")
+               )
     )
-  )
 }
 
 #' Add external Resources to the Application

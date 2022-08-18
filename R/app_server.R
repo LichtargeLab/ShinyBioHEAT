@@ -11,7 +11,6 @@ app_server <- function(input, output, session) {
   gene_rankings <- mod_EA_analysis_server("EA_analysis", processed_evolve = processed_evolve, random_bg = random_bg)
   mod_gene_overlap_server("gene_overlap", gene_rankings = gene_rankings)
   quick_search_output <- mod_EA_search_server("search", name_table = name_table)
-  # structure_server("structure", processed_evolve = processed_evolve,
-  #                  quick_search_output = quick_search_output, pdb_df = pdb_df,
-  #                  ET_data = ET_data, pLDDT_data = pLDDT_data)
+  mod_structure_viewer_server("structure", processed_evolve = processed_evolve,
+                              quick_search_output = quick_search_output)
 }
