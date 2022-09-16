@@ -9,7 +9,7 @@
 #' @importFrom shiny NS tagList
 mod_gene_overlap_ui <- function(id){
   ns <- NS(id)
-  tabPanel("Step 4: Gene enrichment",
+  tabPanel("Step 4: Overlapping genes",
            sidebarLayout(
              sidebarPanel(
                width = 3,
@@ -91,7 +91,7 @@ mod_gene_overlap_server <- function(id, gene_rankings){
       req(set_data())
       req(selected_genes())
       text1 <- paste0("top ", floor(isolate(input$venn_cutoff)/100 * nrow(gene_rankings())),
-                      " genes from each methods are plotted")
+                      " genes from each method are used")
       text2 <- paste0("total genes   : ", nrow(set_data()), " (100%)")
       text3 <- paste0("selected genes : ", nrow(selected_genes()),
                       " (", round(nrow(selected_genes())/nrow(set_data()), 3) *100, "%)"  )

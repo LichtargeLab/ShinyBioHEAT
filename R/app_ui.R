@@ -17,7 +17,7 @@ app_ui <- function(request) {
     navbarPage("E. coli driver gene prediction",
                theme = shinythemes::shinytheme("cerulean"),
                mod_intro_ui("intro"),
-               tabPanel("EA Analysis",
+               tabPanel("Driver Gene Analysis",
                         tabsetPanel(
                           mod_data_input_ui("input_page"),
                           mod_random_mut_ui("random"),

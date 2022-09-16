@@ -1,15 +1,8 @@
-#' intro UI Function
-#'
-#' @description A shiny Module.
-#'
-#' @param id,input,output,session Internal parameters for {shiny}.
-#'
-#' @noRd
-#'
-#' @importFrom shiny NS tagList
-mod_intro_ui <- function(id){
-  ns <- NS(id)
-  tabPanel("Background",
+library(shiny)
+
+
+ui <- fluidPage(
+  tabPanel("Introduction",
            tags$head(
              tags$link(rel="stylesheet",
                        href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css",
@@ -186,10 +179,11 @@ mod_intro_ui <- function(id){
                ),
       )
     ))
+)
+
+server <- function(input, output) {
+
 }
 
-## To be copied in the UI
-# mod_intro_ui("intro_1")
+shinyApp(ui, server)
 
-## To be copied in the server
-# mod_intro_server("intro_1")
