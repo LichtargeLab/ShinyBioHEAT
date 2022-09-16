@@ -20,7 +20,7 @@ PymolColorChainByResidue <- function(chain, position, color, object = NULL) {
   }
   chain_cmd <- paste0("chain ", chain)
   chain_cmd <- paste0(chain_cmd, collapse = " or ")
-  workdf <- tibble(position, color) %>%
+  workdf <- dplyr::tibble(position, color) %>%
     dplyr::filter(!is.na(color)) %>%
     dplyr::group_by(color) %>%
     dplyr::summarize(position = paste0(position, collapse = "+")) %>%
