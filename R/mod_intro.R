@@ -39,8 +39,8 @@ mod_intro_ui <- function(id){
                           HTML(
                             "<ul>",
                             "<li><b>Driver Gene Analysis:</b><br>Two orthogonal approaches,
-                           EA integration and Frequncy based method, are used to identify
-                           pheontype driven genes.</li>",
+                           EA integration and Frequency based method, are used to identify
+                           phenotype driven genes.</li>",
                            "<br>",
                            "<li><b>Quick EA search:</b><br>EA scores predicts the functional impact
                            of protein coding mutations (see details below). This module allows user
