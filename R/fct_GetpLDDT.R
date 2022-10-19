@@ -4,7 +4,7 @@
 #' AF structures.
 #'
 #' @param pdb_lines PDB file that stored in a string vector. Output from readLines()
-#' @param chain
+#' @param chain The chain ID to extract pLDDT from.
 #' @return The return value, if any, from executing the function.
 #'
 #' @noRd

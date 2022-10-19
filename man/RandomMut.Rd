@@ -11,7 +11,6 @@ RandomMut(
   n,
   ti = n\%/\%2,
   cds_only = TRUE,
-  seed = NULL,
   replace = FALSE
 )
 }
@@ -27,8 +26,6 @@ at position i can be indexed as DNA_seq[i].}
 \item{ti}{Number of transition mutations in the simulation. A integer between 0 and n.}
 
 \item{cds_only}{If is TRUE, only mutations in the cds regions will be simulated. Default is TRUE.}
-
-\item{seed}{Seed for random number generation. Used for reproducibility.}
 
 \item{replace}{True or False. Whether a same nucleotide position can be mutated multiple times. Set to FALSE by default.}
 }
