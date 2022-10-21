@@ -21,6 +21,8 @@ ui <- fluidPage(
            ),
     tabsetPanel(
       tabPanel("Introduction",
+               style = "width: 80%; margin: auto;",
+               img(src="www/favicon.ico", align = "right", height="20%", width="20%"),
                tags$h3(tags$b("Introduction")),
                tags$div(
                  HTML("This Shiny app is designed to identify phenotype driven gene in lab
@@ -84,6 +86,7 @@ ui <- fluidPage(
                       p-value for each gene was calculated by $p = P[X≥x]$. "),
                tags$br()),
       tabPanel("Driver gene analysis",
+               style = "width: 80%; margin: auto;",
                tags$h3(tags$b("Driver gene analysis")),
                tags$h4(tags$b("Step 1. Upload data")),
                HTML("Mutation data can be input from VCF files or substitution (SUB) files.
@@ -128,6 +131,7 @@ ui <- fluidPage(
                       button in the Quick EA search tab."),
                tags$br()),
       tabPanel("Mapping to protein structure",
+               style = "width: 80%; margin: auto;",
                tags$h3(tags$b("Mapping to protein structure")),
                HTML("Mutations in driver genes tend to cluster together in protein structure.
                     The Structure Viewer allows users to map values below to <em>E. coli</em>
@@ -151,6 +155,7 @@ ui <- fluidPage(
                tags$p("The raw values and color code for the structure is available in the Color table.
                       A Pymol session file is available to reproduce the coloring locally in Pymol")),
       tabPanel("Acknowledgement and References",
+               style = "width: 80%; margin: auto;",
                tags$h3(tags$b("Acknowledgement")),
                tags$p("This research is based upon work supported [in part] by the Office
                       of the Director of National Intelligence (ODNI), Intelligence Advanced

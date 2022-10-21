@@ -28,6 +28,8 @@ mod_intro_ui <- function(id){
            ),
     tabsetPanel(
       tabPanel("Introduction",
+               style = "width: 80%; margin: auto;",
+               img(src="www/favicon.ico", align = "right", height="20%", width="20%"),
                tags$h3(tags$b("Introduction")),
                tags$div(
                  HTML("This Shiny app is designed to identify phenotype driven gene in lab
@@ -69,35 +71,41 @@ mod_intro_ui <- function(id){
                       0-100, where larger values suggest higher functional impact."),
                tags$h4(tags$b("EA integration")),
                tags$p("Genes under selection during evolution will accumulate more mutations
-                      with high functional impact. Thus, According to EA theory, the fitness
+                      with high functional impact. According to EA theory, the fitness
                       impact of a given set of mutations can be evaluated by integrating the
                       EA scores of these mutations. ", tags$b("EA_KS"), " and",
-                      tags$b("EA_sum"), " can be used to approximate EA integration. "),
-               tags$p("In the ", tags$b("EA-KS"), " approach, mutated genes were ranked by
+                      tags$b("EA_sum"), " can be used to approximate EA integration."),
+               tags$p("In the ", tags$b("EA-KS"), " approach, mutated genes are ranked by
                       their EA mutational impact profile with a non-parametric Kolmogorov–
-                      Smirnov (KS) test against a mutation background."),
-               tags$p("For ", tags$b("EA-sum"), " approach, EA scores for all codon mutations
-                      observed in a gene were summed and compared to the expected values from
-                      a random distribution of mutations. The expected background EA-sum
+                      Smirnov (KS) test against a mutation background (random mutations or
+                      mutations that occur without the selection of interest."),
+               tags$p("For the ", tags$b("EA-sum"), " approach, EA scores for all coding mutations
+                      observed in a gene across samples are summed and compared to the expected values from
+                      the same mutation background as EA-KS. The expected EA-sum
                       values are calculated as EAavg $\\times$ expected mutation count wherein
                       EAavg is the average EA score of all mutations in the mutation background
                       and the expected mutation count is determined by the mutation count in
-                      the sample and gene length."),
+                      the samples and gene length."),
                tags$h4(tags$b("Frequency based method")),
                tags$p("Frequency based analyses are performed based on the assumption that
                       the probability of x mutations occurring in a protein with given
                       length $l$, follows a Poisson distribution with $\\lambda = l \\times m$,
                       where $m$ is the average mutation rate in each dataset. The frequency
                       p-value for each gene was calculated by $p = P[X≥x]$. "),
+               tags$br(),
+               tags$br(),
+               tags$br(),
+               tags$br(),
                tags$br()),
       tabPanel("Driver gene analysis",
+               style = "width: 80%; margin: auto;",
                tags$h3(tags$b("Driver gene analysis")),
                tags$h4(tags$b("Step 1. Upload data")),
-               HTML("Mutation data can be input from VCF files or substitution (SUB) files.
-                    One file per strain. They should be generated using
+               HTML("Mutation data can be input from variant call format (VCF) files or substitution (SUB) files.
+                    One file per sample. The VCF or SUB files should be generated using
                     the reference genome of <em>E. coli</em> K-12 MG1655 (NCBI: U00096.3).
-                    A warning will show up if there is entry in the VCF files that does not match
-                    to the reference genome. SUB files should contain two columns, input_id and SUB,
+                    A warning will show up if there are entries in the VCF/SUB files that do not match
+                    to the reference genome. SUB files should contain two columns that are separated by comma (csv file), input_id and SUB,
                     where input_id stores the locus_tags (b4112) or gene names (basS), and SUB stores
                     the amino acid substituion (C84R)."),
                tags$p("Mutations in the founder strains (strains that are sequenced before selection)
@@ -110,7 +118,7 @@ mod_intro_ui <- function(id){
                       genome, or by gathering mutations occured when passing MG1655 without selective
                       pressure. Using more than 1000 mutations as background distribution is
                       recommended."),
-               tags$h4(tags$b("Step 3. Rune analysis")),
+               tags$h4(tags$b("Step 3. Run analysis")),
                tags$p("After running the analysis, the gene rankings by EA_KS, EA_sum and
                       Frequency method will be returned as a table and a gene ranking plot.
                       The axes of the gene ranking plot can be adjusted. When selecting a
@@ -133,8 +141,13 @@ mod_intro_ui <- function(id){
                       \"Excel\" button on the top of the tables to download the data. Note that only what is shown in the table will be downloaded/copied. To downloaded/copied the entire list, select \"show all entries\" first."),
                tags$p("The entire MG1655 EA dataset can be downloaded through the download
                       button in the Quick EA search tab."),
+               tags$br(),
+               tags$br(),
+               tags$br(),
+               tags$br(),
                tags$br()),
       tabPanel("Mapping to protein structure",
+               style = "width: 80%; margin: auto;",
                tags$h3(tags$b("Mapping to protein structure")),
                HTML("Mutations in driver genes tend to cluster together in protein structure.
                     The Structure Viewer allows users to map values below to <em>E. coli</em>
@@ -158,6 +171,7 @@ mod_intro_ui <- function(id){
                tags$p("The raw values and color code for the structure is available in the Color table.
                       A Pymol session file is available to reproduce the coloring locally in Pymol")),
       tabPanel("Acknowledgement and References",
+               style = "width: 80%; margin: auto;",
                tags$h3(tags$b("Acknowledgement")),
                tags$p("This research is based upon work supported [in part] by the Office
                       of the Director of National Intelligence (ODNI), Intelligence Advanced
