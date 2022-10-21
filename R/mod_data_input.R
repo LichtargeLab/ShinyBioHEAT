@@ -82,6 +82,7 @@ mod_data_input_server <- function(id, name_table){
             multiple = TRUE,
             accept = ".csv"
           ),
+          tags$p(downloadLink(outputId = session$ns("sub_example"), label = "Download example substitution files")),
           splitLayout(cellWidths = c("50%", "50%"),
                       actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"),
                       actionButton(inputId = session$ns("load_example"), label = "Load example", align = "center", class = "btn-warning")))
@@ -190,6 +191,17 @@ mod_data_input_server <- function(id, name_table){
       },
       contentType = "application/zip"
     )
+    ## SUB examples
+    output$sub_example <- downloadHandler(
+      filename = function() {
+        paste("SUB_examples", "zip", sep = ".")
+      },
+      content <- function(file) {
+        file.copy(app_sys("app/www/SUB_examples.zip"), file)
+      },
+      contentType = "application/zip"
+    )
+
     return(evolve_data_filtered)
   })
 }
