@@ -29,8 +29,8 @@ AnnotateMutations <- function(vcf, ref_df = MG1655_ref) {
       dplyr::mutate(SUB = paste0(AA_ref, AA_pos, AA_alt)) %>%
       dplyr::mutate(SNP_type = purrr::map2_chr(AA_ref, AA_alt, function(ref, alt){
         if (is.na(alt)) return("intergenic")
-        else if (alt == "*") return("nonsense")
         else if (alt == ref) return("synonymous")
+        else if (alt == "*") return("nonsense")
         else return("nonsynonymous")
       }))
     output <- dplyr::filter(mut.list, CDS == FALSE) %>%
