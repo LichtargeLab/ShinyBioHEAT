@@ -14,6 +14,7 @@ Imports:
     golem (>= 0.3.2),
     magrittr,
     openxlsx,
+    pkgload,
     purrr,
     r3dmol (>= 0.2.0),
     readr,
@@ -25,5 +26,5 @@ Imports:
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2
-Remotes:  
+Remotes: 
     github::swsoyee/r3dmol
