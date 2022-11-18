@@ -76,8 +76,8 @@ mod_intro_ui <- function(id){
                       EA scores of these mutations. ", tags$b("EA_KS"), " and",
                       tags$b("EA_sum"), " can be used to approximate EA integration."),
                tags$p("In the ", tags$b("EA-KS"), " approach, mutated genes are ranked by
-                      their EA mutational impact profile with a non-parametric Kolmogorov–
-                      Smirnov (KS) test against a mutation background (random mutations or
+                      their EA mutational impact profile with a non-parametric
+                      Kolmogorov–Smirnov (KS) test against a mutation background (random mutations or
                       mutations that occur without the selection of interest."),
                tags$p("For the ", tags$b("EA-sum"), " approach, EA scores for all coding mutations
                       observed in a gene across samples are summed and compared to the expected values from
