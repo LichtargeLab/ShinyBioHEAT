@@ -83,7 +83,7 @@ ui <- fluidPage(
                       the probability of x mutations occurring in a protein with given
                       length $l$, follows a Poisson distribution with $\\lambda = l \\times m$,
                       where $m$ is the average mutation rate in each dataset. The frequency
-                      p-value for each gene was calculated by $p = P[X≥x]$. "),
+                      p-value for each gene was calculated by $p = P[X{\\geq}x]$. "),
                tags$br()),
       tabPanel("Driver gene analysis",
                style = "width: 80%; margin: auto;",

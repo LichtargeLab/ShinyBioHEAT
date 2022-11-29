@@ -75,15 +75,15 @@ mod_intro_ui <- function(id){
                       impact of a given set of mutations can be evaluated by integrating the
                       EA scores of these mutations. ", tags$b("EA_KS"), " and",
                       tags$b("EA_sum"), " can be used to approximate EA integration."),
-               tags$p("In the ", tags$b("EA-KS"), " approach, mutated genes are ranked by
+               tags$p("In the ", tags$b("EA_KS"), " approach, mutated genes are ranked by
                       their EA mutational impact profile with a non-parametric
-                      Kolmogorov–Smirnov (KS) test against a mutation background (random mutations or
+                      Kolmogorov-Smirnov (KS) test against a mutation background (random mutations or
                       mutations that occur without the selection of interest."),
-               tags$p("For the ", tags$b("EA-sum"), " approach, EA scores for all coding mutations
+               tags$p("For the ", tags$b("EA_sum"), " approach, EA scores for all coding mutations
                       observed in a gene across samples are summed and compared to the expected values from
-                      the same mutation background as EA-KS. The expected EA-sum
-                      values are calculated as EAavg $\\times$ expected mutation count wherein
-                      EAavg is the average EA score of all mutations in the mutation background
+                      the same mutation background as EA_KS. The expected EA_sum
+                      values are calculated as avg_EA $\\times$ expected mutation count, where
+                      avg_EA is the average EA score of all mutations in the mutation background
                       and the expected mutation count is determined by the mutation count in
                       the samples and gene length."),
                tags$h4(tags$b("Frequency based method")),
@@ -91,7 +91,7 @@ mod_intro_ui <- function(id){
                       the probability of x mutations occurring in a protein with given
                       length $l$, follows a Poisson distribution with $\\lambda = l \\times m$,
                       where $m$ is the average mutation rate in each dataset. The frequency
-                      p-value for each gene was calculated by $p = P[X≥x]$. "),
+                      p-value for each gene was calculated by $p = P[X{\\geq}x]$. "),
                tags$br(),
                tags$br(),
                tags$br(),

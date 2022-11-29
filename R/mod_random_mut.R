@@ -28,7 +28,7 @@ mod_random_mut_ui <- function(id){
                    tags$h4("Simulation settings", style = "margin-top: 0;"),
                    sliderInput(
                      ns("mut"),
-                     label = "Simulated random coding mutations per strain (100-1000)",
+                     label = "Number of simulated random mutations per strain (100-1000)",
                      value = 100,
                      min = 100,
                      max = 1000,
