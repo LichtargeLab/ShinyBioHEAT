@@ -160,7 +160,7 @@ ui <- fluidPage(
                tags$figure(
                  align = "center",
                  tags$img(
-                   src = "www/overlapping_genes.png",
+                   src = "www/overlapping_genes.jpeg",
                    width = "60%",
                  ),
                  tags$figcaption(
@@ -213,7 +213,7 @@ ui <- fluidPage(
                tags$figure(
                  align = "center",
                  tags$img(
-                   src = "www/structure_viewer.png",
+                   src = "www/structure_viewer.jpeg",
                    width = "60%",
                  ),
                  tags$figcaption(
