@@ -139,11 +139,14 @@ mod_intro_ui <- function(id){
                    style = "width: 60%; margin: auto;",
                    align = "left",
                    tags$p(tags$b("Figure 1. "), "(A) The EA distribution of
-                          randomly simulated non-synonymous
+                          randomly simulated coding
                           mutations decays exponentially and is biased
-                          towards low impact EA scores. (B) In contrast, the exponential
+                          towards low impact EA scores. Dotted line shows the
+                          exponential fit for EA scores of non-synonymous mutations.
+                          (B) In contrast, the exponential
                           decay pattern in EA distribution does not hold for mutations in
-                          driver genes. Those mutations are biased towards high EA.")
+                          driver genes. Those mutations are biased towards high EA. Dotted
+                          line shows EA distribution for simulated mutation background.")
                  )
                ),
                tags$h4(tags$b("Step 3. Run analysis")),
