@@ -85,7 +85,7 @@ mod_intro_ui <- function(id){
                       tags$b("EA_sum"), " can be used to approximate EA integration."),
                tags$p("In the ", tags$b("EA_KS"), " approach, mutated genes are ranked by
                       their EA mutational impact profile with a non-parametric
-                      Kolmogorov-Smirnov (KS) test against a mutation background (random mutations or
+                      Kolmogorov-Smirnov (KS) test against a mutation background, usually random mutations or
                       mutations that occur without the selection of interest. The driver genes
                       are expected to have a bised EA distribution towards high EA scores."),
                tags$p("For the ", tags$b("EA_sum"), " approach, EA scores for all coding mutations
@@ -97,8 +97,8 @@ mod_intro_ui <- function(id){
                       the samples and gene length. The driver genes are expected to have higher
                       EA_sum than non-driver genes.
                       "),
-               tags$h4(tags$b("Frequency based method")),
-               tags$p("Frequency based analyses are performed based on the assumption that
+               tags$h4(tags$b("A frequency-based method")),
+               tags$p("A frequency-based analysis is performed based on the assumption that
                       the probability of x mutations occurring in a protein with given
                       length $l$, follows a Poisson distribution with $\\lambda = l \\times m$,
                       where $m$ is the average mutation rate in each dataset. The frequency
@@ -139,11 +139,14 @@ mod_intro_ui <- function(id){
                    style = "width: 60%; margin: auto;",
                    align = "left",
                    tags$p(tags$b("Figure 1. "), "(A) The EA distribution of
-                          randomly simulated non-synonymous
+                          randomly simulated coding
                           mutations decays exponentially and is biased
-                          towards low impact EA scores. (B) In contrast, the exponential
+                          towards low impact EA scores. Dotted line shows the
+                          exponential fit for EA scores of non-synonymous mutations.
+                          (B) In contrast, the exponential
                           decay pattern in EA distribution does not hold for mutations in
-                          driver genes. Those mutations are biased towards high EA.")
+                          driver genes. Those mutations are biased towards high EA. Dotted
+                          line shows EA distribution for simulated mutation background.")
                  )
                ),
                tags$h4(tags$b("Step 3. Run analysis")),
