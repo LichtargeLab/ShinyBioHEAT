@@ -117,8 +117,8 @@ mod_intro_ui <- function(id){
                     the reference genome of <em>E. coli</em> K-12 MG1655 (NCBI: U00096.3).
                     A warning will show up if there are entries in the VCF/SUB files that do not match
                     to the reference genome. SUB files should contain two columns, input_id and SUB, that are separated by comma (csv file),
-                    where input_id stores the locus_tags (b4112) or gene names (basS), and SUB stores
-                    the amino acid substitution (C84R)."),
+                    where input_id stores the locus_tags (e.g. b4112) or gene names (e.g. basS), and SUB stores
+                    the amino acid substitution (e.g. C84R)."),
                tags$p("Mutations in the founder strains (strains that are sequenced before selection)
                       are less likely to contribute to the adapted phenotype. Thus, they are subtracted
                       out from the evolve strains during the analysis. "),
