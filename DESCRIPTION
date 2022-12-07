@@ -28,3 +28,5 @@ LazyData: true
 RoxygenNote: 7.1.2
 Remotes: 
     github::swsoyee/r3dmol
+Depends: 
+    R (>= 4.0.0)
