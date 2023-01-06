@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of ShinyBioHEAT is to provide a shiny interface to allow users to predict phenotype driver gene in lab evolved *E. coli* strains using Evolutionary Action.
+The goal of ShinyBioHEAT is to provide a shiny interface to allow users to predict phenotype driver gene in lab evolved *E. coli* strains using Evolutionary Action. A live version of the application is hosted at [http://bioheat.lichtargelab.org](http://bioheat.lichtargelab.org).
 The application contains 3 modules:
 
 1. **Driver Gene Analysis**: Two orthogonal approaches, EA integration and Frequency based method, are used to identify phenotype driven genes.
