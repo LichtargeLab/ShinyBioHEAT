@@ -6,7 +6,7 @@
 #'
 #' @noRd
 GetCodonALT <- function(codon.ref.v, codon.pos.v, ALT.v) {
-  codon.alt <- unique(codon.ref.v)
+  codon.alt <- codon.ref.v[1]
   for (i in 1:length(codon.pos.v)){
     stringr::str_sub(codon.alt, start = codon.pos.v[i],
                      end = codon.pos.v[i]) <- ALT.v[i]

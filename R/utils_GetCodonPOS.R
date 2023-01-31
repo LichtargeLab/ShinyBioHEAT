@@ -1,20 +1,18 @@
-#' GetCodonPOS
-#'
+#' Get the codon substitution position
 #' @description Get codon mutated position
-#'
-#' @return The return value, if any, from executing the utility.
+#' @param POS A vector of nucleotide position referencing to the genome
+#' @param start A vector of start nucleotide position of the query protein
+#' @param end A vector of end nucleotide position of the query protein
+#' @param strand + or -. Vector.
+#' @return Codon positions
 #'
 #' @noRd
 GetCodonPOS <- function(POS, start, end, strand) {
-  if (is.na(strand)) output <- NA
-  else if (strand == "+") {
-    output <- (POS - start + 1) %% 3
-    if (output == 0) output = 3
+  if (sum(!strand %in% c("+", "-")) > 0) {
+    stop("only use '+' or '-' in strand")
   }
-  else if (strand == "-") {
-    output <- (end - POS + 1) %% 3
-    if (output == 0) output = 3
-  }
-  else output <- NA
+  strand <- strand == "+"
+  output <- ((POS - start + 1)*strand + (end - POS + 1)*(1-strand)) %% 3
+  output[output == 0] <- 3
   return(output)
 }

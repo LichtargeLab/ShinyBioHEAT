@@ -5,19 +5,21 @@
 #' @return A tibble with annotated mutations
 #'
 #' @noRd
-AnnotateMutations <- function(vcf, ref_df = MG1655_ref) {
-  gbk_ref <- dplyr::mutate(ref_df, DNA = ifelse(CDS, DNA, NA))
+AnnotateMutations <- function(vcf, ref_df = MG1655_ref, genome_map = MG1655_genome_map) {
   mut.list <- vcf %>%
     dplyr::select(POS, REF, ALT, INFO) %>%
     dplyr::filter(nchar(REF) == 1 & nchar(ALT) == 1) %>%
-    dplyr::mutate(protein_file = purrr::map(POS, ~dplyr::filter(gbk_ref, . >= start, . <= end))) %>%
-    tidyr::unnest(cols = c(protein_file)) %>%
+    dplyr::mutate(id = genome_map[POS]) %>%
+    tidyr::unnest(cols = c(id)) %>%
+    dplyr::left_join(ref_df, by = "id") %>%
+    dplyr::arrange(POS, locus_tag) %>%
     dplyr::mutate(SNP_type = "")
+
   if (nrow(mut.list) > 0) {
     cds.output <- dplyr::filter(mut.list, CDS == TRUE) %>%
-      dplyr::mutate(AA_pos = purrr::pmap_dbl(list(POS, start, end, strand), GetAAPOS)) %>%
-      dplyr::mutate(codon_pos = purrr::pmap_dbl(list(POS, start, end, strand), GetCodonPOS)) %>%
-      dplyr::mutate(codon_ref = purrr::pmap_chr(list(AA_pos, strand, DNA), GetCodonREF)) %>%
+      dplyr::mutate(AA_pos = GetAAPOS(POS, start, end, strand)) %>%
+      dplyr::mutate(codon_pos = GetCodonPOS(POS, start, end, strand)) %>%
+      dplyr::mutate(codon_ref = GetCodonREF(AA_pos, strand, ref_df$DNA[id])) %>%
       dplyr::mutate(AA_ref = codon_table[codon_ref]) %>%
       dplyr::mutate(ALT.1 = ifelse(strand == "+",
                                    ALT,
@@ -27,12 +29,7 @@ AnnotateMutations <- function(vcf, ref_df = MG1655_ref) {
       dplyr::ungroup() %>%
       dplyr::mutate(AA_alt = codon_table[codon_alt]) %>%
       dplyr::mutate(SUB = paste0(AA_ref, AA_pos, AA_alt)) %>%
-      dplyr::mutate(SNP_type = purrr::map2_chr(AA_ref, AA_alt, function(ref, alt){
-        if (is.na(alt)) return("intergenic")
-        else if (alt == ref) return("synonymous")
-        else if (alt == "*") return("nonsense")
-        else return("nonsynonymous")
-      }))
+      dplyr::mutate(SNP_type = GetSNPType(AA_ref, AA_alt))
     output <- dplyr::filter(mut.list, CDS == FALSE) %>%
       dplyr::mutate(SNP_type = ifelse(stringr::str_detect(gene, "intergenic"),
                                       "intergenic",

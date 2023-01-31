@@ -6,7 +6,9 @@
 #'
 #' @noRd
 GetCodonREF <- function(AA.POS, strand, DNA) {
-  if (is.na(strand)) output <- NA
+  # Genes in the - strand are already reversed complemented in the
+  # gbk tibble
   output <- stringr::str_sub(DNA, AA.POS*3-2, AA.POS*3)
+  output[is.na(strand)] <- NA
   return(output)
 }
