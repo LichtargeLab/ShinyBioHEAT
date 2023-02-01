@@ -12,10 +12,10 @@ VCFtoEA <- function(input_file_name, input_file_path, EA_list, ref_seq) {
   ) %>%
     dplyr::mutate(strain = stringr::str_split(strain, ".vcf", simplify = TRUE)[, 1]) %>%
     dplyr::mutate(data = purrr::map(file, ReadVCF)) %>%
-    dplyr::mutate(data = purrr::map(data, AnnotateMutations)) %>%
-    tidyr::unnest(cols = c(data)) %>%
-    dplyr::mutate(EA = purrr::map2_chr(locus_tag, SUB, ~GetEA(.x, .y, EA_list = EA_list))) %>%
     dplyr::select(-file) %>%
+    tidyr::unnest(cols = c(data)) %>%
+    AnnotateMutations(., .group = "strain") %>%
+    dplyr::mutate(EA = purrr::map2_chr(locus_tag, SUB, ~GetEA(.x, .y, EA_list = EA_list))) %>%
     dplyr::mutate(
       POS = as.integer(POS),
       AA_pos = as.integer(AA_pos),

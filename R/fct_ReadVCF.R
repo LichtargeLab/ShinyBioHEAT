@@ -1,10 +1,10 @@
 #' ReadVCF
 #'
-#' @description Read single sample VCF file. VCF head is removed.
-#'
-#' @return A tibble that contains information in the VCF file.
-#'
-#' @noRd
+#' @description Read the entries from the vcf files, headers are removed.
+#' @author Chen Wang
+#' @param path Path to the vcf file
+#' @return A tibble containing all the entries in the VCF file.
+#' @export
 ReadVCF <- function(path) {
   vcf.temp <- readr::read_lines(path)
   skip.row <- grep(pattern = "#CHROM", vcf.temp) - 1 # remove info rows from the vcf header
