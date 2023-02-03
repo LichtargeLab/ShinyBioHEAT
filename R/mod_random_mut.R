@@ -135,9 +135,9 @@ mod_random_mut_server <- function(id, name_table){
               cds_only = input$cds_only,
             )
           )) %>%
-          dplyr::mutate(data = purrr::map(data, AnnotateMutations)) %>%
           tidyr::unnest(cols = c(data)) %>%
-          dplyr::mutate(EA = purrr::map2_chr(locus_tag, SUB, ~GetEA(.x, .y, EA_list = MG1655_EA_list))) %>%
+          AnnotateMutations(., .group = "strain") %>%
+          dplyr::mutate(EA = GetEA(locus_tag, SUB, MG1655_EA_list)) %>%
           dplyr::mutate(
             POS = as.integer(POS),
             AA_pos = as.integer(AA_pos),

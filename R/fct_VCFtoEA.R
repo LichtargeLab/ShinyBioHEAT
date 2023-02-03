@@ -15,7 +15,7 @@ VCFtoEA <- function(input_file_name, input_file_path, EA_list, ref_seq) {
     dplyr::select(-file) %>%
     tidyr::unnest(cols = c(data)) %>%
     AnnotateMutations(., .group = "strain") %>%
-    dplyr::mutate(EA = purrr::map2_chr(locus_tag, SUB, ~GetEA(.x, .y, EA_list = EA_list))) %>%
+    dplyr::mutate(EA = GetEA(locus_tag, SUB, EA_list = EA_list)) %>%
     dplyr::mutate(
       POS = as.integer(POS),
       AA_pos = as.integer(AA_pos),
