@@ -45,7 +45,7 @@ write_rds(AF_url_df, "inst/app/www/AF_url_df.rds")
 
 # Prepare AF_ET mapping df
 
-AF_df <- readRDS(app_sys("app/www/AF_url_df.rds"))
+AF_df <- readRDS("inst/app/www/AF_url_df.rds")
 ET_data <- read_csv("~/Work/Colistin/20210304-EAapp_v2/www/MG1655_ET.csv", col_types = cols()) %>%
   select(locus_tag, gene, AA.POS, ET) %>%
   arrange(locus_tag, AA.POS) %>%
