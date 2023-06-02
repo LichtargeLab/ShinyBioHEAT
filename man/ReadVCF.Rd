@@ -4,10 +4,12 @@
 \alias{ReadVCF}
 \title{ReadVCF}
 \usage{
-ReadVCF(path)
+ReadVCF(path, header_max = 100)
 }
 \arguments{
 \item{path}{Path to the vcf file}
+
+\item{header_max}{Max number of rows to guess VCF header lines.}
 }
 \value{
 A tibble containing all the entries in the VCF file.
