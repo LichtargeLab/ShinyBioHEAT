@@ -24,8 +24,8 @@ GraphGeneEA <- function(df, bg, locus, include.stop = TRUE) {
   evolve_factor <- plt_data$EA %>% cut(., breaks = 0:10*10) %>% table %>% max()
   scaling_factor <- evolve_factor/bg_factor
   plt <- ggplot2::ggplot() +
-    ggplot2::geom_histogram(data = plt_data, ggplot2::aes(x = EA, y=..count..), fill = "red", color = "black", position="identity", alpha=1, breaks = 10*0:10) +
-    ggplot2::geom_line(data = bg_data, ggplot2::aes(x = EA.bin, y = ..count..*scaling_factor), stat = "count", size=1, linetype=3) +
+    ggplot2::geom_histogram(data = plt_data, ggplot2::aes(x = EA, y= ggplot2::after_stat(count)), fill = "red", color = "black", position="identity", alpha=1, breaks = 10*0:10) +
+    ggplot2::geom_line(data = bg_data, ggplot2::aes(x = EA.bin, y = ggplot2::after_stat(count)*scaling_factor), stat = "count", size=1, linetype=3) +
     ggplot2::theme(text = ggplot2::element_text(size=15)) +
     ggplot2::xlim(0,100) +
     ggplot2::scale_y_continuous("Count", sec.axis = ggplot2::sec_axis(~./scaling_factor, name = "Count (Random)"),

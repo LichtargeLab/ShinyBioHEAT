@@ -16,7 +16,7 @@ GraphWholeGenomeEADist <- function(df, exp_fit = TRUE, title = NULL) {
     dplyr::mutate(SNP.type = factor(SNP.type, levels = c("nonsense", "nonsynonymous")))
   output_plot <- ggplot2::ggplot(workdf) +
     ggplot2::geom_histogram(
-      ggplot2::aes(x = EA, y = ..count.., fill = SNP.type),
+      ggplot2::aes(x = EA, y = ggplot2::after_stat(count), fill = SNP.type),
       breaks = 10 * 0:10,
       position = "stack",
       color = "black"
