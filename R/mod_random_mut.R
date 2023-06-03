@@ -19,6 +19,7 @@ mod_random_mut_ui <- function(id){
                  choices = c("Simulate random mutations" = "simulation",
                              "Use example random mutations" = "example",
                              "Custom VCF file" = "VCF",
+                             "Custom GD file" = "GD",
                              "Custom SUB file" = "SUB"),
                  selected = "simulation"
                ),
@@ -77,6 +78,17 @@ mod_random_mut_ui <- function(id){
                        accept = ".vcf"
                      ),
                      actionButton(inputId = ns("submit_vcf"), width = "100%", label = "Submit VCF files", align = "center", class = "btn-primary")
+                   )),
+               # GD input UI
+               div(id = ns("GD_ui"),
+                   tagList(
+                     fileInput(
+                       ns("GD_files"),
+                       label = "Upload GD files for background mutations",
+                       multiple = TRUE,
+                       accept = ".gd"
+                     ),
+                     actionButton(inputId = ns("submit_gd"), width = "100%", label = "Submit GD files", align = "center", class = "btn-primary")
                    )),
                # SUB input UI
                div(id = ns("SUB_ui"),
@@ -173,6 +185,16 @@ mod_random_mut_server <- function(id, name_table){
       bg(VCF_df)
     })
 
+    observeEvent(input$submit_gd, {
+      req(input$GD_files)
+      withProgress(
+        message = "Annotating GD files",
+        GD_df <- GDtoEA(input$GD_files$name, input$GD_files$datapath,
+                        EA_list = MG1655_EA_list, ref_seq = MG1655_seq)
+      )
+      bg(GD_df)
+    })
+
     observeEvent(input$submit_sub, {
       req(input$SUB_files)
       withProgress(
@@ -233,6 +255,11 @@ mod_random_mut_server <- function(id, name_table){
         shinyjs::show("VCF_ui")
       } else {
         shinyjs::hide("VCF_ui")
+      }
+      if (input$input_type == "GD") {
+        shinyjs::show("GD_ui")
+      } else {
+        shinyjs::hide("GD_ui")
       }
       if (input$input_type == "SUB") {
         shinyjs::show("SUB_ui")

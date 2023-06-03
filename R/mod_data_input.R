@@ -17,7 +17,8 @@ mod_data_input_ui <- function(id){
                  inputId = ns("input_type"),
                  label = "Select input type",
                  choices = c("VCF" = "VCF",
-                             "Amino acid substitutions" = "SUB"),
+                             "breseq GD file" = "GD",
+                             "Amino acid substitutions (SUB)" = "SUB"),
                  selected = "VCF"
                ),
                uiOutput(outputId = ns("input_selection"))
@@ -68,6 +69,25 @@ mod_data_input_server <- function(id, name_table){
                       actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"),
                       actionButton(inputId = session$ns("load_example"), label = "Load example", align = "center", class = "btn-warning"))
         )
+      } else if (input$input_type == "GD") {
+        tagList(
+          fileInput(
+            session$ns("evolve_files"),
+            label = "Upload GD files of evolve strains here",
+            multiple = TRUE,
+            accept = ".gd"
+          ),
+          fileInput(
+            session$ns("founder_files"),
+            label = "Upload GD files of founder strains here (optional)",
+            multiple = TRUE,
+            accept = ".gd"
+          ),
+          tags$p(downloadLink(outputId = session$ns("gd_example"), label = "Download example GD files")),
+          splitLayout(cellWidths = c("50%", "50%"),
+                      actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"),
+                      actionButton(inputId = session$ns("load_example"), label = "Load example", align = "center", class = "btn-warning"))
+        )
       } else {
         tagList(
           fileInput(
@@ -96,6 +116,8 @@ mod_data_input_server <- function(id, name_table){
         switch(input$input_type,
                VCF = VCFtoEA(input$evolve_files$name, input$evolve_files$datapath,
                              EA_list = MG1655_EA_list, ref_seq = MG1655_seq),
+               GD = GDtoEA(input$evolve_files$name, input$evolve_files$datapath,
+                           EA_list = MG1655_EA_list, ref_seq = MG1655_seq),
                SUB = SUBtoEA(input$evolve_files$name, input$evolve_files$datapath,
                              name_table = name_table, EA_list = MG1655_EA_list))
       )
@@ -109,6 +131,8 @@ mod_data_input_server <- function(id, name_table){
         switch(input$input_type,
                VCF = VCFtoEA(input$founder_files$name, input$founder_files$datapath,
                              EA_list = MG1655_EA_list, ref_seq = MG1655_seq),
+               GD = GDtoEA(input$founder_files$name, input$founder_files$datapath,
+                           EA_list = MG1655_EA_list, ref_seq = MG1655_seq),
                SUB = SUBtoEA(input$founder_files$name, input$founder_files$datapath,
                              name_table = name_table, EA_list = MG1655_EA_list))
       )
@@ -188,6 +212,16 @@ mod_data_input_server <- function(id, name_table){
       },
       content <- function(file) {
         file.copy(app_sys("app/www/VCF_examples.zip"), file)
+      },
+      contentType = "application/zip"
+    )
+    ## GD examples
+    output$vcf_example <- downloadHandler(
+      filename = function() {
+        paste("GD_examples", "zip", sep = ".")
+      },
+      content <- function(file) {
+        file.copy(app_sys("app/www/GD_examples.zip"), file)
       },
       contentType = "application/zip"
     )
