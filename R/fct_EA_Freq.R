@@ -5,7 +5,9 @@
 #' @return The return value, if any, from executing the function.
 #'
 #' @noRd
-EA_Freq <- function(evolve, background, ref_table = MG1655_ref) {
+EA_Freq <- function(evolve, background, ref_table = MG1655_ref,
+                    adj.method = c("bonferroni", "fdr")) {
+  adj.method <- match.arg(adj.method)
   len.map <- ref_table %>%
     dplyr::mutate(Len = width/3 -1) %>%
     dplyr::select(locus_tag, Len)
@@ -29,8 +31,10 @@ EA_Freq <- function(evolve, background, ref_table = MG1655_ref) {
     dplyr::mutate(EAKS_rank = rank(EAKS_p),
                   EAsum_rank = rank(dplyr::desc(EAsum)),
                   Freq_rank = rank(Freq_p)) %>%
+    dplyr::mutate(EAKS_p_adj = p.adjust(EAKS_p, method = adj.method),
+                  Freq_p_adj = p.adjust(Freq_p, method = adj.method)) %>%
     dplyr::arrange(EAKS_rank) %>%
-    dplyr::select(gene, locus_tag, EAKS_rank, EAsum_rank, Freq_rank, EAKS_p, protein_length = Len, mutation_count, expect_mutation_count,
-                  observed_EAsum, expect_EAsum, EAsum, Freq_p)
+    dplyr::select(gene, locus_tag, EAKS_rank, EAsum_rank, Freq_rank, EAKS_p, EAKS_p_adj, protein_length = Len, mutation_count, expect_mutation_count,
+                  observed_EAsum, expect_EAsum, EAsum, Freq_p, Freq_p_adj)
   return(output)
 }

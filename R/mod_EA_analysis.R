@@ -13,6 +13,18 @@ mod_EA_analysis_ui <- function(id){
            sidebarLayout(
              sidebarPanel(
                width = 3,
+               tags$h4("EA analysis settings", style = "margin-top: 0;"),
+               selectInput(
+                 inputId = ns("adj.type"),
+                 label = "Multiple testing adjustment",
+                 choices = c("Benjamini-Hochberg / FDR" = "fdr",
+                             "Bonferroni" = "bonferroni"),
+                 selected = "fdr",
+                 selectize = FALSE
+               ),
+               actionButton(ns("run_analysis"),
+                            label = "EA analysis", width = "100%", class = "btn-primary"),
+               tags$hr(style="border-color: black;"),
                tags$h4("Gene rankings plot settings", style = "margin-top: 0;"),
                selectInput(
                  inputId = ns("scale.type"),
@@ -28,8 +40,6 @@ mod_EA_analysis_ui <- function(id){
                  selectInput(ns("y_var"), "Y", c("EA_KS rank", "EA_sum rank", "Frequency rank"),
                              selected = "EA_KS rank", selectize = FALSE)
                ),
-               actionButton(ns("run_analysis"),
-                            label = "EA analysis", width = "100%", class = "btn-primary"),
                tags$hr(style="border-color: black;"),
                uiOutput(outputId = ns("Stringdb"))
              ),
@@ -61,15 +71,17 @@ mod_EA_analysis_ui <- function(id){
 #'
 #' @noRd
 mod_EA_analysis_server <- function(id, processed_evolve, random_bg){
-  moduleServer( id, function(input, output, session){
+  moduleServer(id, function(input, output, session){
     ns <- session$ns
     # Run EA KS test and frequency based analyses
     gene_rankings_df <- eventReactive(input$run_analysis, {
       req(processed_evolve())
       req(random_bg())
+      req(input$adj.type)
       withProgress(
         message = "Analyzing Data",
-        EA_Freq(evolve = processed_evolve(), background = random_bg())
+        EA_Freq(evolve = processed_evolve(), background = random_bg(),
+                adj.method = input$adj.type)
       )
     })
     observeEvent(input$run_analysis, {
@@ -95,7 +107,7 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg){
       gene_rankings_df() %>%
         DisplayDT(download.name = "gene_ranks") %>%
         DT::formatSignif(columns = c("EAKS_p", "Freq_p", "EAsum", "expect_EAsum",
-                                     "expect_mutation_count"),
+                                     "expect_mutation_count", "EAKS_p_adj", "Freq_p_adj"),
                          digits = 3)
     })
 
