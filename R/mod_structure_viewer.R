@@ -39,6 +39,14 @@ mod_structure_viewer_ui <- function(id){
                                 placeholder = "Choose",
                                 maxItems = 1
                               )),
+               selectizeInput(
+                 inputId = ns("ET_color"),
+                 label = "ET color scheme",
+                 choices = c("Rainbow" = "ET",
+                             "Red-white-blue" = "red_white_blue",
+                             "Red-yellow-green" = "red_yellow_green"),
+                 selected = "ET"
+               ),
                actionButton(
                  inputId = ns("load_structure"),
                  label = "Load structure",
@@ -155,7 +163,7 @@ mod_structure_viewer_server <- function(id, processed_evolve, quick_search_outpu
         tidyr::replace_na(list(mutation_count = 0,
                                unique_mutation_count = 0,
                                sumEA = 0)) %>%
-        ColorMutations() %>%
+        ColorMutations(., ET_color = input$ET_color) %>%
         dplyr::select(-locus_tag)
       ET_color <- paste0('"', color_df$ET_color, '"', collapse = ",")
       sumEA_color <- paste0('"', color_df$sumEA_color, '"', collapse = ",")
@@ -181,8 +189,16 @@ mod_structure_viewer_server <- function(id, processed_evolve, quick_search_outpu
       showModal(modalDialog(
         title = "Color legends",
         div(
-          tags$h4("ET color"),
+          tags$h4("ET color (Rainbow)"),
           tags$img(src = "www/legend_ET.png", width = "100%"),
+          tags$br(),
+          tags$br(),
+          tags$h4("ET color (Red-white-blue)"),
+          tags$img(src = "www/legend_ET_rwb.png", width = "100%"),
+          tags$br(),
+          tags$br(),
+          tags$h4("ET color (Red-yellow-green)"),
+          tags$img(src = "www/legend_ET_ryg.png", width = "100%"),
           tags$br(),
           tags$br(),
           tags$h4("AlphaFold pLDDT color"),

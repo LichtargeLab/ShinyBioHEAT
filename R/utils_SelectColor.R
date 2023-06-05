@@ -5,7 +5,8 @@
 #' @return A vector of 100 hex color values.
 #'
 #' @noRd
-SelectColor <- function(color_type = c("ET", "red_white", "red_white_blue", "white_red", "alphafold")) {
+SelectColor <- function(color_type = c("ET", "red_white", "red_white_blue", "white_red", "alphafold",
+                                       "red_yellow_green")) {
   if (color_type == "ET") {
     colorRange <- c("ff0000", "ff0c00", "ff1800", "ff2400", "ff3000", "ff3d00", "ff4900", "ff5500", "ff6100", "ff6e00",
                     "ff7a00", "ff8600", "ff9200", "ff9f00", "ffab00", "ffb700", "ffc300", "ffd000", "ffdc00", "ffe800",
@@ -27,8 +28,10 @@ SelectColor <- function(color_type = c("ET", "red_white", "red_white_blue", "whi
     colorRange <- colorRampPalette(c("red", "white"))(100)
   } else if (color_type == "red_white_blue") {
     colorRange <- colorRampPalette(c("red", "white", "blue"))(100)
-  } else {
+  } else if (color_type == "white_red") {
     colorRange <- colorRampPalette(c("white", "red"))(100)
+  } else {
+    colorRange <- colorRampPalette(c("red", "yellow", "green"))(100)
   }
   return(colorRange)
 }
