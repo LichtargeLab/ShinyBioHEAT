@@ -10,5 +10,5 @@ GetNameTable <- function(ref) {
   name_table <- bind_rows(gene_info_a, gene_info_b)
   return(name_table)
 }
-MG1655_name_table <- GetNameTable(BioHEAT::MG1655.ref)
+MG1655_name_table <- GetNameTable(BioHEAT::MG1655_ref)
 saveRDS(MG1655_name_table, "inst/app/www/MG1655_name_table.rds", compress = FALSE)
