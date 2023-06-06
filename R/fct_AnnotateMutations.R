@@ -44,7 +44,7 @@ AnnotateMutations <- function(vcf, ref_df = MG1655_ref, genome_map = MG1655_geno
       dplyr::mutate(codon_alt = GetCodonALT(codon_ref, codon_pos, ALT.1)) %>%
       dplyr::ungroup() %>%
       dplyr::mutate(AA_alt = codon_table[codon_alt]) %>%
-      dplyr::mutate(SUB = paste0(AA_ref, AA_pos, AA_alt)) %>%
+      dplyr::mutate(SUB = paste0(AA_ref, AA_pos + AA_pad, AA_alt)) %>%
       dplyr::mutate(SNP_type = GetSNPType(AA_ref, AA_alt))
     output <- dplyr::filter(mut.list, CDS == FALSE) %>%
       dplyr::mutate(SNP_type = ifelse(stringr::str_detect(gene, "intergenic"),
@@ -66,3 +66,4 @@ AnnotateMutations <- function(vcf, ref_df = MG1655_ref, genome_map = MG1655_geno
     dplyr::arrange(dplyr::across(c(dplyr::all_of(.group), "POS")))
   return(output)
 }
+
