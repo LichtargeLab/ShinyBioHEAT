@@ -119,7 +119,7 @@ mod_random_mut_ui <- function(id){
 #' random_mut Server Functions
 #'
 #' @noRd
-mod_random_mut_server <- function(id, name_table){
+mod_random_mut_server <- function(id, name_table, EA_list){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     bg <- reactiveVal()
@@ -149,7 +149,7 @@ mod_random_mut_server <- function(id, name_table){
           )) %>%
           tidyr::unnest(cols = c(data)) %>%
           AnnotateMutations(., .group = "strain") %>%
-          dplyr::mutate(EA = GetEA(locus_tag, SUB, MG1655_EA_list)) %>%
+          dplyr::mutate(EA = GetEA(locus_tag, SUB, EA_list)) %>%
           dplyr::mutate(
             POS = as.integer(POS),
             AA_pos = as.integer(AA_pos),
@@ -172,7 +172,7 @@ mod_random_mut_server <- function(id, name_table){
       withProgress(
         message = "Annotating VCF files",
         VCF_df <- VCFtoEA(input$VCF_files$name, input$VCF_files$datapath,
-                          EA_list = MG1655_EA_list, ref_seq = MG1655_seq)
+                          EA_list = EA_list, ref_seq = MG1655_seq)
       )
       ref_mismatch_count <- sum(VCF_df$match_reference == FALSE)
       if (ref_mismatch_count != 0) {
@@ -190,7 +190,7 @@ mod_random_mut_server <- function(id, name_table){
       withProgress(
         message = "Annotating GD files",
         GD_df <- GDtoEA(input$GD_files$name, input$GD_files$datapath,
-                        EA_list = MG1655_EA_list, ref_seq = MG1655_seq)
+                        EA_list = EA_list, ref_seq = MG1655_seq)
       )
       bg(GD_df)
     })
@@ -200,7 +200,7 @@ mod_random_mut_server <- function(id, name_table){
       withProgress(
         message = "Annotating SUB files",
         SUB_df <- SUBtoEA(input$SUB_files$name, input$SUB_files$datapath,
-                          name_table = name_table, EA_list = MG1655_EA_list)
+                          name_table = name_table, EA_list = EA_list)
       )
       bg(SUB_df)
     })

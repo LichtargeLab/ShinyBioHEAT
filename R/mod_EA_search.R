@@ -36,12 +36,12 @@ mod_EA_search_ui <- function(id){
 #' EA_search Server Functions
 #'
 #' @noRd
-mod_EA_search_server <- function(id, name_table){
+mod_EA_search_server <- function(id, name_table, EA_list){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     search_output <- eventReactive(input$EA_search_btn, {
       req(input$EA_search_text)
-      Annotate_SUB_file(input = c(input$EA_search_text), MG1655_EA_list, name_table, string_input = TRUE)
+      Annotate_SUB_file(input = c(input$EA_search_text), EA_list, name_table, string_input = TRUE)
     })
     output$EA_search_output <- DT::renderDataTable({
       search_output() %>%
