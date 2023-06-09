@@ -8,13 +8,20 @@ app_server <- function(input, output, session) {
   # the modal dialog where the user can enter the query details.
   init_modal <- modalDialog(
     title = "Initialize app",
-    selectInput(
-      inputId = "genome",
-      label = "Select reference genome",
-      choices = c("E. coli MG1655" = "MG1655",
-                  "E. coli REL606" = "REL606"),
-      selected = "MG1655",
-      selectize = FALSE
+    selectizeInput(inputId = "genome", label = "Select reference genome",
+                   choices = list(`<i>E. coli</i> MG1655` = "MG1655",
+                                  `<i>E. coli</i> REL606` = "REL606"),
+                   select = "MG1655",
+                   options = list(render = I(
+                     '{
+                           item: function(item, escape) {
+                           return "<div>" + item.label + "</div>"
+                           },
+                           option: function(item, escape) {
+                           return "<div>" + item.label + "</div>"
+                           }
+  }'
+                   ))
     ),
     easyClose = F,
     footer = tagList(
