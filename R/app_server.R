@@ -9,8 +9,8 @@ app_server <- function(input, output, session) {
   init_modal <- modalDialog(
     title = "Initialize app",
     selectizeInput(inputId = "genome", label = "Select reference genome",
-                   choices = list(`<i>E. coli</i> MG1655` = "MG1655",
-                                  `<i>E. coli</i> REL606` = "REL606"),
+                   choices = list(`<i>Escherichia coli</i> MG1655` = "MG1655",
+                                  `<i>Escherichia coli</i> REL606` = "REL606"),
                    select = "MG1655",
                    options = list(render = I(
                      '{
