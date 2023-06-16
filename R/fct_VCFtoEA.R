@@ -5,7 +5,8 @@
 #' @return A annotated VCF file
 #'
 #' @noRd
-VCFtoEA <- function(input_file_name, input_file_path, EA_list, ref_seq) {
+VCFtoEA <- function(input_file_name, input_file_path, EA_list, ref_seq,
+                    ref_df, genome_map) {
   output <- dplyr::tibble(
     strain = input_file_name,
     file = input_file_path
@@ -14,7 +15,7 @@ VCFtoEA <- function(input_file_name, input_file_path, EA_list, ref_seq) {
     dplyr::mutate(data = purrr::map(file, ReadVCF)) %>%
     dplyr::select(-file) %>%
     tidyr::unnest(cols = c(data)) %>%
-    AnnotateMutations(., .group = "strain") %>%
+    AnnotateMutations(., .group = "strain", ref_df = ref_df, genome_map = genome_map) %>%
     dplyr::mutate(EA = GetEA(locus_tag, SUB, EA_list = EA_list)) %>%
     dplyr::mutate(
       POS = as.integer(POS),

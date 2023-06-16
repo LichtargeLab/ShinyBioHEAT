@@ -46,7 +46,8 @@ mod_data_input_ui <- function(id){
 #' data_input Server Functions
 #'
 #' @noRd
-mod_data_input_server <- function(id, name_table, EA_list, strain){
+mod_data_input_server <- function(id, name_table, EA_list,
+                                  ref_df, ref_seq, genome_map, strain){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     output$input_selection <- renderUI({
@@ -173,9 +174,11 @@ mod_data_input_server <- function(id, name_table, EA_list, strain){
         message = "Annotating evolve strains",
         switch(input$input_type,
                VCF = VCFtoEA(input$evolve_files$name, input$evolve_files$datapath,
-                             EA_list = EA_list, ref_seq = MG1655_seq),
+                             EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                             genome_map = genome_map),
                GD = GDtoEA(input$evolve_files$name, input$evolve_files$datapath,
-                           EA_list = EA_list, ref_seq = MG1655_seq),
+                           EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                           genome_map = genome_map),
                SUB = SUBtoEA(input$evolve_files$name, input$evolve_files$datapath,
                              name_table = name_table, EA_list = EA_list))
       )
@@ -188,9 +191,9 @@ mod_data_input_server <- function(id, name_table, EA_list, strain){
         message = "Annotating founder strains",
         switch(input$input_type,
                VCF = VCFtoEA(input$founder_files$name, input$founder_files$datapath,
-                             EA_list = EA_list, ref_seq = MG1655_seq),
+                             EA_list = EA_list, ref_seq = ref_seq),
                GD = GDtoEA(input$founder_files$name, input$founder_files$datapath,
-                           EA_list = EA_list, ref_seq = MG1655_seq),
+                           EA_list = EA_list, ref_seq = ref_seq),
                SUB = SUBtoEA(input$founder_files$name, input$founder_files$datapath,
                              name_table = name_table, EA_list = EA_list))
       )

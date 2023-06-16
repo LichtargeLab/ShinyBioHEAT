@@ -9,4 +9,7 @@ REL606_seq <- gbk@sequence %>%
   str_split(., pattern = "", simplify = TRUE) %>%
   .[1,]
 
-save(REL606_seq, file = "data/REL606_seq.rda")
+saveRDS(REL606_seq, file = "inst/app/www/REL606/REL606_seq.rds", compress = FALSE)
+
+load("data/MG1655_seq.rda")
+saveRDS(MG1655_seq, file = "inst/app/www/MG1655/MG1655_seq.rds", compress = FALSE)

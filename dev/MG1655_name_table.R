@@ -11,4 +11,16 @@ GetNameTable <- function(ref) {
   return(name_table)
 }
 MG1655_name_table <- GetNameTable(BioHEAT::MG1655_ref)
-saveRDS(MG1655_name_table, "inst/app/www/MG1655_name_table.rds", compress = FALSE)
+saveRDS(MG1655_name_table, "inst/app/www/MG1655/MG1655_name_table.rds", compress = FALSE)
+
+
+
+MG1655_ref <- BioHEAT::MG1655_ref %>%
+  mutate(string_id = locus_tag)
+
+saveRDS(MG1655_ref, "inst/app/www/MG1655/MG1655_ref.rds")
+
+
+MG1655_genome_map <- BioHEAT::MG1655_genome_map
+
+saveRDS(MG1655_genome_map, "inst/app/www/MG1655/MG1655_genome_map.rds")

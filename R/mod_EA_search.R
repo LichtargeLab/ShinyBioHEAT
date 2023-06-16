@@ -36,9 +36,16 @@ mod_EA_search_ui <- function(id){
 #' EA_search Server Functions
 #'
 #' @noRd
-mod_EA_search_server <- function(id, name_table, EA_list){
+mod_EA_search_server <- function(id, name_table, EA_list, strain){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    observeEvent(strain(), {
+      if (strain() == "REL606") {
+        updateTextAreaInput(inputId = "EA_search_text", label = NULL,
+                            value = "ECB_RS16665 D50G\nECB_RS17325 M1C\ngyrA S83A\naraJ F239L")
+      }
+    })
+
     search_output <- eventReactive(input$EA_search_btn, {
       req(input$EA_search_text)
       Annotate_SUB_file(input = c(input$EA_search_text), EA_list, name_table, string_input = TRUE)

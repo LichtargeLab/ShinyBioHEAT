@@ -31,6 +31,6 @@ GenelistToSets <- function(gene_rankings, top) {
   output <- AnnotateSets(top_list) %>%
     dplyr::select(locus_tag = element, set) %>%
     dplyr::left_join(gene_rankings, by = "locus_tag") %>%
-    dplyr::select(gene, locus_tag, EAKS_rank, EAsum_rank, Freq_rank, set)
+    dplyr::select(gene, locus_tag, EAKS_rank, EAsum_rank, Freq_rank, set, string_id)
   return(output)
 }

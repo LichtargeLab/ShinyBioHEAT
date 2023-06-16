@@ -102,23 +102,23 @@ mod_structure_viewer_ui <- function(id){
 #' structure_viewer Server Functions
 #'
 #' @noRd
-mod_structure_viewer_server <- function(id, processed_evolve, quick_search_output){
+mod_structure_viewer_server <- function(id, processed_evolve, quick_search_output,
+                                        structure_df){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-    AF_ET_df <- readRDS(app_sys("app/www/AF_ET_df.rds"))
     # This updates the prot_id SelectizeInput with gene or locus tag
     observeEvent(c(input$input_type, input$mut_input), {
       gene_choices <- NULL
       locus_tag_choices <- NULL
       if (input$mut_input == "quick_search") {
-        gene_choices <- dplyr::intersect(AF_ET_df$gene, quick_search_output()$gene)
-        locus_tag_choices <- dplyr::intersect(AF_ET_df$locus_tag, quick_search_output()$locus_tag)
+        gene_choices <- dplyr::intersect(structure_df$gene, quick_search_output()$gene)
+        locus_tag_choices <- dplyr::intersect(structure_df$locus_tag, quick_search_output()$locus_tag)
       } else if (input$mut_input == "EA_analysis") {
-        gene_choices <- dplyr::intersect(AF_ET_df$gene, processed_evolve()$gene)
-        locus_tag_choices <- dplyr::intersect(AF_ET_df$locus_tag, processed_evolve()$locus_tag)
+        gene_choices <- dplyr::intersect(structure_df$gene, processed_evolve()$gene)
+        locus_tag_choices <- dplyr::intersect(structure_df$locus_tag, processed_evolve()$locus_tag)
       } else {
-        gene_choices <- AF_ET_df$gene
-        locus_tag_choices <- AF_ET_df$locus_tag
+        gene_choices <- structure_df$gene
+        locus_tag_choices <- structure_df$locus_tag
       }
       if(input$input_type == "gene") {
         updateSelectizeInput(inputId = "prot_id",
@@ -138,11 +138,13 @@ mod_structure_viewer_server <- function(id, processed_evolve, quick_search_outpu
     structure_para_list <- eventReactive(input$load_structure, {
       filter_var <- isolate(input$input_type)
       id <- isolate(input$prot_id)
-      AF_ET_sel <- AF_ET_df[AF_ET_df[[filter_var]] == id,]
+      AF_ET_sel <- structure_df[structure_df[[filter_var]] == id,]
       AF_url <- AF_ET_sel$AF_url[1]
       AF_pdb <- readLines(AF_url, warn = FALSE)
       AF_pLDDT <- GetpLDDT(AF_pdb) %>%
         dplyr::select(AA.POS = POS, pLDDT)
+      ET_df <- data.frame(ET = AF_ET_sel$ET_vec[[1]]) %>%
+        dplyr::mutate(AA.POS = 1:dplyr::n())
       mut_data <- switch(isolate(input$mut_input),
                          "no" = dplyr::tibble(gene = character(), locus_tag = character(),
                                        EA = numeric(), SUB = character()),
@@ -158,7 +160,7 @@ mod_structure_viewer_server <- function(id, processed_evolve, quick_search_outpu
                          unique_mutation_count = length(unique(SUB)),
                          sumEA = sum(EA), .groups = "drop") %>%
         dplyr::ungroup() %>%
-        dplyr::left_join(AF_ET_sel$data[[1]], ., by = c("AA.POS")) %>%
+        dplyr::left_join(ET_df, ., by = c("AA.POS")) %>%
         dplyr::left_join(AF_pLDDT, by = c("AA.POS")) %>%
         tidyr::replace_na(list(mutation_count = 0,
                                unique_mutation_count = 0,

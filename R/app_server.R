@@ -31,27 +31,48 @@ app_server <- function(input, output, session) {
 
   # Show the modal on start up ...
   showModal(init_modal)
+  ref_df <- reactiveVal()
+  ref_seq <- reactiveVal()
+  genome_map <- reactiveVal()
   name_table <- reactiveVal()
   EA_list <- reactiveVal()
+  structure_df <- reactiveVal()
+
   observeEvent(input$confirm_genome, {
-    removeModal()
+    ref_df_file <- paste0("app/www/", input$genome, "/", input$genome, "_ref.rds")
+    genome_map_file <- paste0("app/www/", input$genome, "/", input$genome, "_genome_map.rds")
+    ref_seq_file <- paste0("app/www/", input$genome, "/", input$genome, "_seq.rds")
+    name_table_file <- paste0("app/www/", input$genome, "/", input$genome, "_name_table.rds")
+    EA_list_file <- paste0("app/www/", input$genome, "/", input$genome, "_EA_list.rds")
+    structure_df_file <- paste0("app/www/", input$genome, "/", input$genome, "_structure.rds")
+
     withProgress(
       message = "Loading files",
       expr = {
-        name_table(readRDS(app_sys("app/www/MG1655_name_table.rds")))
-        EA_list(readRDS(app_sys("app/www/MG1655/MG1655_EA_list.rds")))
+        ref_df(readRDS(app_sys(ref_df_file)))
+        ref_seq(readRDS(app_sys(ref_seq_file)))
+        genome_map(readRDS(app_sys(genome_map_file)))
+        name_table(readRDS(app_sys(name_table_file)))
+        EA_list(readRDS(app_sys(EA_list_file)))
+        structure_df(readRDS(app_sys(structure_df_file)))
       }
     )
+    removeModal()
+    processed_evolve <- mod_data_input_server("input_page", name_table = name_table(),
+                                              EA_list = EA_list(), ref_df = ref_df(),
+                                              ref_seq = ref_seq(), genome_map = genome_map(),
+                                              strain = reactive(input$genome))
+    random_bg <- mod_random_mut_server("random", name_table = name_table(),
+                                       EA_list = EA_list(), ref_df = ref_df(),
+                                       ref_seq = ref_seq(), genome_map = genome_map())
+    gene_rankings <- mod_EA_analysis_server("EA_analysis", processed_evolve = processed_evolve,
+                                            random_bg = random_bg, ref_df = ref_df())
+    mod_gene_overlap_server("gene_overlap", gene_rankings = gene_rankings)
+    quick_search_output <- mod_EA_search_server("search", name_table = name_table(),
+                                                EA_list = EA_list(), strain = reactive(input$genome))
+    mod_structure_viewer_server("structure", processed_evolve = processed_evolve,
+                                quick_search_output = quick_search_output,
+                                structure_df = structure_df())
   })
-  processed_evolve <- mod_data_input_server("input_page", name_table = name_table(),
-                                            EA_list = EA_list(), strain = reactive(input$genome))
-  random_bg <- mod_random_mut_server("random", name_table = name_table(),
-                                     EA_list = EA_list())
-  gene_rankings <- mod_EA_analysis_server("EA_analysis", processed_evolve = processed_evolve,
-                                          random_bg = random_bg)
-  mod_gene_overlap_server("gene_overlap", gene_rankings = gene_rankings)
-  quick_search_output <- mod_EA_search_server("search", name_table = name_table(),
-                                              EA_list = EA_list())
-  mod_structure_viewer_server("structure", processed_evolve = processed_evolve,
-                              quick_search_output = quick_search_output)
+
 }

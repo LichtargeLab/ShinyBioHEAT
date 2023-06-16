@@ -119,7 +119,8 @@ mod_random_mut_ui <- function(id){
 #' random_mut Server Functions
 #'
 #' @noRd
-mod_random_mut_server <- function(id, name_table, EA_list){
+mod_random_mut_server <- function(id, name_table, EA_list,
+                                  ref_df, ref_seq, genome_map){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     bg <- reactiveVal()
@@ -140,15 +141,15 @@ mod_random_mut_server <- function(id, name_table, EA_list){
           dplyr::mutate(data = purrr::map(
             strain,
             ~ RandomMut(
-              ref_table = dplyr::filter(MG1655_ref, CDS == TRUE),
-              DNA_seq = MG1655_seq,
+              ref_table = dplyr::filter(ref_df, CDS == TRUE),
+              DNA_seq = ref_seq,
               n = input$mut,
               ti = ceiling(input$mut * input$ti_ratio/100),
               cds_only = input$cds_only,
             )
           )) %>%
           tidyr::unnest(cols = c(data)) %>%
-          AnnotateMutations(., .group = "strain") %>%
+          AnnotateMutations(., .group = "strain", ref_df = ref_df, genome_map = genome_map) %>%
           dplyr::mutate(EA = GetEA(locus_tag, SUB, EA_list)) %>%
           dplyr::mutate(
             POS = as.integer(POS),
@@ -172,7 +173,8 @@ mod_random_mut_server <- function(id, name_table, EA_list){
       withProgress(
         message = "Annotating VCF files",
         VCF_df <- VCFtoEA(input$VCF_files$name, input$VCF_files$datapath,
-                          EA_list = EA_list, ref_seq = MG1655_seq)
+                          EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                          genome_map = genome_map)
       )
       ref_mismatch_count <- sum(VCF_df$match_reference == FALSE)
       if (ref_mismatch_count != 0) {
@@ -190,7 +192,8 @@ mod_random_mut_server <- function(id, name_table, EA_list){
       withProgress(
         message = "Annotating GD files",
         GD_df <- GDtoEA(input$GD_files$name, input$GD_files$datapath,
-                        EA_list = EA_list, ref_seq = MG1655_seq)
+                        EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                        genome_map = genome_map)
       )
       bg(GD_df)
     })

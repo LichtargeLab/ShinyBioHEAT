@@ -127,7 +127,7 @@ mod_gene_overlap_server <- function(id, gene_rankings){
           "Please select more than 1 gene on the Venn diagram"
         ))
       } else {
-        gene_list <- selected_genes()$locus_tag %>%
+        gene_list <- selected_genes()$string_id %>%
           paste0(., collapse = "%0d")
         string_api <- paste0("https://string-db.org/api/tsv-no-header/get_link?identifiers=", gene_list, "&species=511145")
         string_link <- readLines(string_api)

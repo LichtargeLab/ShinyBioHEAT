@@ -5,7 +5,7 @@
 #' @param vcf A tibble with all the entries from vcf file. POS, REF, ALT and INFO columns are
 #' required. Can be generated with ReadVCF function.
 #' @param ref_df A tibble storing the genomic information of the reference genome. Can be generated
-#' with ExtractGBK function. Default value is MG1655_ref.
+#' with ExtractGBK function.
 #' @param genome_map A feature map list to quick trace the feature ids for given positions.
 #' Can be generated using GenerateGenomeMapping function.
 #' @param .group A character string. The column(s) that should be used to group nucleodides together
@@ -27,15 +27,23 @@ AnnotateMutations <- function(vcf, ref_df = MG1655_ref, genome_map = MG1655_geno
     dplyr::filter(nchar(REF) == 1 & nchar(ALT) == 1) %>%
     dplyr::mutate(id = genome_map[POS]) %>%
     tidyr::unnest(cols = c(id)) %>%
-    dplyr::left_join(ref_df, by = "id") %>%
+    dplyr::left_join(dplyr::select(ref_df, -DNA), by = "id") %>%
     dplyr::arrange(POS, locus_tag) %>%
     dplyr::mutate(SNP_type = "")
 
   if (nrow(mut.list) > 0) {
+    transcript <- ref_df %>%
+      dplyr::filter(CDS == TRUE, locus_tag %in% mut.list$locus_tag) %>%
+      dplyr::group_by(locus_tag) %>%
+      dplyr::arrange(fragment) %>%
+      dplyr::summarise(DNA = paste0(DNA, collapse = ""))
     cds.output <- dplyr::filter(mut.list, CDS == TRUE) %>%
-      dplyr::mutate(AA_pos = GetAAPOS(POS, start, end, strand)) %>%
-      dplyr::mutate(codon_pos = GetCodonPOS(POS, start, end, strand)) %>%
-      dplyr::mutate(codon_ref = GetCodonREF(AA_pos, strand, ref_df$DNA[id])) %>%
+      dplyr::mutate(transcript_pos = GetTranscriptPOS(POS, start, end, strand, DNA_pad)) %>%
+      dplyr::mutate(AA_pos = (transcript_pos - 1) %/% 3 + 1) %>%
+      dplyr::mutate(codon_pos = transcript_pos %%3) %>%
+      dplyr::mutate(codon_pos = ifelse(codon_pos == 0, 3, codon_pos)) %>%
+      dplyr::left_join(transcript, by = "locus_tag") %>%
+      dplyr::mutate(codon_ref = GetCodonREF(AA_pos, strand, DNA)) %>%
       dplyr::mutate(AA_ref = codon_table[codon_ref]) %>%
       dplyr::mutate(ALT.1 = ifelse(strand == "+",
                                    ALT,
@@ -44,7 +52,7 @@ AnnotateMutations <- function(vcf, ref_df = MG1655_ref, genome_map = MG1655_geno
       dplyr::mutate(codon_alt = GetCodonALT(codon_ref, codon_pos, ALT.1)) %>%
       dplyr::ungroup() %>%
       dplyr::mutate(AA_alt = codon_table[codon_alt]) %>%
-      dplyr::mutate(SUB = paste0(AA_ref, AA_pos + AA_pad, AA_alt)) %>%
+      dplyr::mutate(SUB = paste0(AA_ref, AA_pos, AA_alt)) %>%
       dplyr::mutate(SNP_type = GetSNPType(AA_ref, AA_alt))
     output <- dplyr::filter(mut.list, CDS == FALSE) %>%
       dplyr::mutate(SNP_type = ifelse(stringr::str_detect(gene, "intergenic"),
@@ -52,10 +60,11 @@ AnnotateMutations <- function(vcf, ref_df = MG1655_ref, genome_map = MG1655_geno
                                       "non coding genes")) %>%
       dplyr::mutate(SNP_type = as.character(SNP_type)) %>%
       dplyr::bind_rows(., cds.output) %>%
-      dplyr::select(.group, POS, REF, ALT, gene, locus_tag, CDS, SNP_type, SUB, AA_pos, AA_ref, AA_alt, codon_pos, codon_ref, codon_alt, INFO)
+      dplyr::select(dplyr::all_of(.group), POS, REF, ALT, gene, locus_tag, strand, CDS, SNP_type, SUB, AA_pos, AA_ref, AA_alt, codon_pos, codon_ref, codon_alt, INFO)
   } else {
     output <- dplyr::tibble(POS = double(), REF = character(), ALT = character(),
-                            gene = character(), locus_tag = character(), CDS = logical(),
+                            gene = character(), locus_tag = character(),
+                            strand = character(), CDS = logical(),
                             SNP_type = character(), SUB = character(), AA_pos = double(),
                             AA_ref = character(), AA_alt = character(), codon_pos = double(),
                             codon_ref = character(), codon_alt = character(), INFO = character())
@@ -66,4 +75,3 @@ AnnotateMutations <- function(vcf, ref_df = MG1655_ref, genome_map = MG1655_geno
     dplyr::arrange(dplyr::across(c(dplyr::all_of(.group), "POS")))
   return(output)
 }
-

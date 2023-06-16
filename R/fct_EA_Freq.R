@@ -5,12 +5,12 @@
 #' @return The return value, if any, from executing the function.
 #'
 #' @noRd
-EA_Freq <- function(evolve, background, ref_table = MG1655_ref,
+EA_Freq <- function(evolve, background, ref_df,
                     adj.method = c("bonferroni", "fdr")) {
   adj.method <- match.arg(adj.method)
-  len.map <- ref_table %>%
+  len.map <- ref_df %>%
     dplyr::mutate(Len = width/3 -1) %>%
-    dplyr::select(locus_tag, Len)
+    dplyr::select(locus_tag, Len, string_id)
   totallen <- sum(len.map$Len)
   avg_EA <- mean(background$EA)
   output <- evolve %>%
@@ -35,6 +35,6 @@ EA_Freq <- function(evolve, background, ref_table = MG1655_ref,
                   Freq_p_adj = p.adjust(Freq_p, method = adj.method)) %>%
     dplyr::arrange(EAKS_rank) %>%
     dplyr::select(gene, locus_tag, EAKS_rank, EAsum_rank, Freq_rank, EAKS_p, EAKS_p_adj, protein_length = Len, mutation_count, expect_mutation_count,
-                  observed_EAsum, expect_EAsum, EAsum, Freq_p, Freq_p_adj)
+                  observed_EAsum, expect_EAsum, EAsum, Freq_p, Freq_p_adj, string_id)
   return(output)
 }
