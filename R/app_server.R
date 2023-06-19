@@ -38,6 +38,7 @@ app_server <- function(input, output, session) {
   name_table <- reactiveVal()
   EA_list <- reactiveVal()
   structure_df <- reactiveVal()
+  bg_example <- reactiveVal()
 
   observeEvent(input$confirm_genome, {
     ref_df_file <- paste0("app/www/", input$genome, "/", input$genome, "_ref.rds")
@@ -46,6 +47,7 @@ app_server <- function(input, output, session) {
     name_table_file <- paste0("app/www/", input$genome, "/", input$genome, "_name_table.rds")
     EA_list_file <- paste0("app/www/", input$genome, "/", input$genome, "_EA_list.rds")
     structure_df_file <- paste0("app/www/", input$genome, "/", input$genome, "_structure.rds")
+    bg_example_file <- paste0("app/www/", input$genome, "/", input$genome, "_random_mut.rds")
 
     withProgress(
       message = "Loading files",
@@ -56,6 +58,7 @@ app_server <- function(input, output, session) {
         name_table(readRDS(app_sys(name_table_file)))
         EA_list(readRDS(app_sys(EA_list_file)))
         structure_df(readRDS(app_sys(structure_df_file)))
+        bg_example(readRDS(app_sys(bg_example_file)))
       }
     )
     removeModal()
@@ -65,7 +68,8 @@ app_server <- function(input, output, session) {
                                               strain = reactive(input$genome))
     random_bg <- mod_random_mut_server("random", name_table = name_table(),
                                        EA_list = EA_list(), ref_df = ref_df(),
-                                       ref_seq = ref_seq(), genome_map = genome_map())
+                                       ref_seq = ref_seq(), genome_map = genome_map(),
+                                       bg_example = bg_example())
     gene_rankings <- mod_EA_analysis_server("EA_analysis", processed_evolve = processed_evolve,
                                             random_bg = random_bg, ref_df = ref_df())
     mod_gene_overlap_server("gene_overlap", gene_rankings = gene_rankings)

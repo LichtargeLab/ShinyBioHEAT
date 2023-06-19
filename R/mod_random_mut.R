@@ -29,16 +29,16 @@ mod_random_mut_ui <- function(id){
                    tags$h4("Simulation settings", style = "margin-top: 0;"),
                    sliderInput(
                      ns("mut"),
-                     label = "Number of simulated random mutations per strain (100-1000)",
-                     value = 100,
-                     min = 100,
-                     max = 1000,
-                     step = 100
+                     label = "Number of simulated random mutations per strain (200-2000)",
+                     value = 1000,
+                     min = 200,
+                     max = 2000,
+                     step = 200
                    ),
                    sliderInput(
                      ns("strain"),
                      label = "Number of simulated strains (1-20)",
-                     value = 1,
+                     value = 10,
                      min = 1,
                      max = 20,
                      step = 1
@@ -60,7 +60,7 @@ mod_random_mut_ui <- function(id){
                      ns("cds_only"), label = "Coding regions only", value =  TRUE
                    ),
                    numericInput(
-                     ns("random_seed"), label = "Set random seed", value = 1000
+                     ns("random_seed"), label = "Set random seed", value = 100
                    )
                ),
                # Example UI
@@ -120,7 +120,8 @@ mod_random_mut_ui <- function(id){
 #'
 #' @noRd
 mod_random_mut_server <- function(id, name_table, EA_list,
-                                  ref_df, ref_seq, genome_map){
+                                  ref_df, ref_seq, genome_map,
+                                  bg_example){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     bg <- reactiveVal()
@@ -164,7 +165,7 @@ mod_random_mut_server <- function(id, name_table, EA_list,
     observeEvent(input$load_example, {
       withProgress(
         message = "Loading data",
-        bg(readRDS(app_sys("app/www/MG1655_random_mut.rds")))
+        bg(bg_example)
       )
     })
 
