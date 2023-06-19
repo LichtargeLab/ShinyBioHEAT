@@ -10,7 +10,8 @@ app_server <- function(input, output, session) {
     title = "Initialize app",
     selectizeInput(inputId = "genome", label = "Select reference genome",
                    choices = list(`<i>Escherichia coli</i> MG1655` = "MG1655",
-                                  `<i>Escherichia coli</i> REL606` = "REL606"),
+                                  `<i>Escherichia coli</i> REL606` = "REL606",
+                                  `<i>Bacillus subtilis</i> strain 168` = "Bsubtilis168"),
                    select = "MG1655",
                    options = list(render = I(
                      '{

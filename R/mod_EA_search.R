@@ -45,6 +45,9 @@ mod_EA_search_server <- function(id, name_table, EA_list, strain){
       if (strain() == "REL606") {
         updateTextAreaInput(inputId = "EA_search_text", label = NULL,
                             value = "ECB_RS16665 D50G\nECB_00097 M1C\ngyrA S83A\naraJ F239L")
+      } else if (strain() == "Bsubtilis168") {
+        updateTextAreaInput(inputId = "EA_search_text", label = NULL,
+                            value = "BSU_17850 Q8P\nBSU_16120 A222T\ngyrA L589P\nrecA E154V")
       }
     })
 

@@ -1,6 +1,6 @@
 library(tidyverse)
 
-strain <- "MG1655"
+strain <- "Bsubtilis168"
 
 EA <- readRDS(paste0("inst/app/www/", strain, "/", strain, "_EA_list.rds"))
 locus_tag <- names(EA)
