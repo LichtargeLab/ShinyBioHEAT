@@ -8,7 +8,11 @@ app_server <- function(input, output, session) {
   # the modal dialog where the user can enter the query details.
   init_modal <- modalDialog(
     title = "Initialize app",
-    selectizeInput(inputId = "genome", label = "Select reference genome",
+    div(tags$b("Select a reference genome:"),
+        tags$p(HTML("To run an example, choose <i>Escherichia coli</i> MG1655."),
+               tags$br(),
+               HTML("The loading step may take several seconds."))),
+    selectizeInput(inputId = "genome", label = NULL,
                    choices = list(`<i>Escherichia coli</i> MG1655` = "MG1655",
                                   `<i>Escherichia coli</i> REL606` = "REL606",
                                   `<i>Bacillus subtilis</i> strain 168` = "Bsubtilis168"),
