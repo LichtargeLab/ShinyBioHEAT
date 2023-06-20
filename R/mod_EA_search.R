@@ -27,7 +27,9 @@ mod_EA_search_ui <- function(id){
                   actionButton(inputId = ns("EA_search_btn"), label = "Submit", class = "btn-primary"),
                   tags$br(),
                   tags$br(),
-                  downloadButton(outputId = ns("download_EA"), label = "Download EA for all proteins")
+                  actionButton(inputId = ns("download_EA"),
+                               label = "Access EA for all proteins here",
+                               class ="btn-info")
            ),
            column(6,
                   DT::dataTableOutput(outputId = ns("EA_search_output"))))
@@ -36,27 +38,31 @@ mod_EA_search_ui <- function(id){
 #' EA_search Server Functions
 #'
 #' @noRd
-mod_EA_search_server <- function(id, name_table){
+mod_EA_search_server <- function(id, name_table, EA_list, strain){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    observeEvent(strain(), {
+      if (strain() == "REL606") {
+        updateTextAreaInput(inputId = "EA_search_text", label = NULL,
+                            value = "ECB_RS16665 D50G\nECB_00097 M1C\ngyrA S83A\naraJ F239L")
+      } else if (strain() == "Bsubtilis168") {
+        updateTextAreaInput(inputId = "EA_search_text", label = NULL,
+                            value = "BSU_17850 Q8P\nBSU_16120 A222T\ngyrA L589P\nrecA E154V")
+      }
+    })
+
     search_output <- eventReactive(input$EA_search_btn, {
       req(input$EA_search_text)
-      Annotate_SUB_file(input = c(input$EA_search_text), MG1655_EA_list, name_table, string_input = TRUE)
+      Annotate_SUB_file(input = c(input$EA_search_text), EA_list, name_table, string_input = TRUE)
     })
     output$EA_search_output <- DT::renderDataTable({
       search_output() %>%
         dplyr::select(input_id, gene, locus_tag, SUB, EA) %>%
         DisplayDT(download.name = "quick_EA_search")
     })
-    output$download_EA <- downloadHandler(
-      filename <- function() {
-        paste("MG1655_EA", "tar", "xz", sep = ".")
-      },
-      content <- function(file) {
-        file.copy(app_sys("app/www/MG1655_EA.tar.xz"), file)
-      },
-      contentType = "application/tar.xz"
-    )
+    observeEvent(input$download_EA, {
+      shinyjs::js$browseURL("https://github.com/LichtargeLab/Raw_EA_bacteria")
+    })
     return(search_output)
   })
 }

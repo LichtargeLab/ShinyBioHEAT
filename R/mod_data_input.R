@@ -46,67 +46,126 @@ mod_data_input_ui <- function(id){
 #' data_input Server Functions
 #'
 #' @noRd
-mod_data_input_server <- function(id, name_table){
+mod_data_input_server <- function(id, name_table, EA_list,
+                                  ref_df, ref_seq, genome_map, strain){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     output$input_selection <- renderUI({
-      if(input$input_type == "VCF") {
-        tagList(
-          fileInput(
-            session$ns("evolve_files"),
-            label = "Upload VCFs of evolve strains here",
-            multiple = TRUE,
-            accept = ".vcf"
-          ),
-          fileInput(
-            session$ns("founder_files"),
-            label = "Upload VCFs of founder strains here (optional)",
-            multiple = TRUE,
-            accept = ".vcf"
-          ),
-          tags$p(downloadLink(outputId = session$ns("vcf_example"), label = "Download example VCF files")),
-          splitLayout(cellWidths = c("50%", "50%"),
-                      actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"),
-                      actionButton(inputId = session$ns("load_example"), label = "Load example", align = "center", class = "btn-warning"))
-        )
-      } else if (input$input_type == "GD") {
-        tagList(
-          fileInput(
-            session$ns("evolve_files"),
-            label = "Upload GD files of evolve strains here",
-            multiple = TRUE,
-            accept = ".gd"
-          ),
-          fileInput(
-            session$ns("founder_files"),
-            label = "Upload GD files of founder strains here (optional)",
-            multiple = TRUE,
-            accept = ".gd"
-          ),
-          tags$p(downloadLink(outputId = session$ns("gd_example"), label = "Download example GD files")),
-          splitLayout(cellWidths = c("50%", "50%"),
-                      actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"),
-                      actionButton(inputId = session$ns("load_example"), label = "Load example", align = "center", class = "btn-warning"))
-        )
+      if(strain() == "MG1655") {
+        # load examples if strain is MG1655
+        if(input$input_type == "VCF") {
+          tagList(
+            fileInput(
+              session$ns("evolve_files"),
+              label = "Upload VCFs of evolve strains here",
+              multiple = TRUE,
+              accept = ".vcf"
+            ),
+            fileInput(
+              session$ns("founder_files"),
+              label = "Upload VCFs of founder strains here (optional)",
+              multiple = TRUE,
+              accept = ".vcf"
+            ),
+            tags$p(downloadLink(outputId = session$ns("vcf_example"), label = "Download example VCF files")),
+            splitLayout(cellWidths = c("50%", "50%"),
+                        actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"),
+                        actionButton(inputId = session$ns("load_example"), label = "Load example", align = "center", class = "btn-warning"))
+          )
+        } else if (input$input_type == "GD") {
+          tagList(
+            fileInput(
+              session$ns("evolve_files"),
+              label = "Upload GD files of evolve strains here",
+              multiple = TRUE,
+              accept = ".gd"
+            ),
+            fileInput(
+              session$ns("founder_files"),
+              label = "Upload GD files of founder strains here (optional)",
+              multiple = TRUE,
+              accept = ".gd"
+            ),
+            tags$p(downloadLink(outputId = session$ns("gd_example"), label = "Download example GD files")),
+            splitLayout(cellWidths = c("50%", "50%"),
+                        actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"),
+                        actionButton(inputId = session$ns("load_example"), label = "Load example", align = "center", class = "btn-warning"))
+          )
+        } else {
+          tagList(
+            fileInput(
+              session$ns("evolve_files"),
+              label = "Upload amino acid substitution files (CSV files) of evolve strains here",
+              multiple = TRUE,
+              accept = ".csv"
+            ),
+            fileInput(
+              session$ns("founder_files"),
+              label = "Upload amino acid substitution files of founder strains here (optional)",
+              multiple = TRUE,
+              accept = ".csv"
+            ),
+            tags$p(downloadLink(outputId = session$ns("sub_example"), label = "Download example substitution files")),
+            splitLayout(cellWidths = c("50%", "50%"),
+                        actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"),
+                        actionButton(inputId = session$ns("load_example"), label = "Load example", align = "center", class = "btn-warning")))
+        }
       } else {
-        tagList(
-          fileInput(
-            session$ns("evolve_files"),
-            label = "Upload amino acid substitution files (CSV files) of evolve strains here",
-            multiple = TRUE,
-            accept = ".csv"
-          ),
-          fileInput(
-            session$ns("founder_files"),
-            label = "Upload amino acid substitution files of founder strains here (optional)",
-            multiple = TRUE,
-            accept = ".csv"
-          ),
-          tags$p(downloadLink(outputId = session$ns("sub_example"), label = "Download example substitution files")),
-          splitLayout(cellWidths = c("50%", "50%"),
-                      actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"),
-                      actionButton(inputId = session$ns("load_example"), label = "Load example", align = "center", class = "btn-warning")))
+        # disable examples if strain is not MG1655
+        if(input$input_type == "VCF") {
+          tagList(
+            fileInput(
+              session$ns("evolve_files"),
+              label = "Upload VCFs of evolve strains here",
+              multiple = TRUE,
+              accept = ".vcf"
+            ),
+            fileInput(
+              session$ns("founder_files"),
+              label = "Upload VCFs of founder strains here (optional)",
+              multiple = TRUE,
+              accept = ".vcf"
+            ),
+            splitLayout(cellWidths = c("50%", "50%"),
+                        actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"))
+          )
+        } else if (input$input_type == "GD") {
+          tagList(
+            fileInput(
+              session$ns("evolve_files"),
+              label = "Upload GD files of evolve strains here",
+              multiple = TRUE,
+              accept = ".gd"
+            ),
+            fileInput(
+              session$ns("founder_files"),
+              label = "Upload GD files of founder strains here (optional)",
+              multiple = TRUE,
+              accept = ".gd"
+            ),
+            splitLayout(cellWidths = c("50%", "50%"),
+                        actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary"))
+          )
+        } else {
+          tagList(
+            fileInput(
+              session$ns("evolve_files"),
+              label = "Upload amino acid substitution files (CSV files) of evolve strains here",
+              multiple = TRUE,
+              accept = ".csv"
+            ),
+            fileInput(
+              session$ns("founder_files"),
+              label = "Upload amino acid substitution files of founder strains here (optional)",
+              multiple = TRUE,
+              accept = ".csv"
+            ),
+            tags$p(downloadLink(outputId = session$ns("sub_example"), label = "Download example substitution files")),
+            splitLayout(cellWidths = c("50%", "50%"),
+                        actionButton(inputId = session$ns("submit_files"), label = "Submit files", align = "center", class = "btn-primary")))
+        }
       }
+
     })
     ## Gather mutations in evolve strains, then annotate
     evolve_data <- eventReactive(input$submit_files, {
@@ -115,11 +174,13 @@ mod_data_input_server <- function(id, name_table){
         message = "Annotating evolve strains",
         switch(input$input_type,
                VCF = VCFtoEA(input$evolve_files$name, input$evolve_files$datapath,
-                             EA_list = MG1655_EA_list, ref_seq = MG1655_seq),
+                             EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                             genome_map = genome_map),
                GD = GDtoEA(input$evolve_files$name, input$evolve_files$datapath,
-                           EA_list = MG1655_EA_list, ref_seq = MG1655_seq),
+                           EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                           genome_map = genome_map),
                SUB = SUBtoEA(input$evolve_files$name, input$evolve_files$datapath,
-                             name_table = name_table, EA_list = MG1655_EA_list))
+                             name_table = name_table, EA_list = EA_list))
       )
     })
 
@@ -130,11 +191,11 @@ mod_data_input_server <- function(id, name_table){
         message = "Annotating founder strains",
         switch(input$input_type,
                VCF = VCFtoEA(input$founder_files$name, input$founder_files$datapath,
-                             EA_list = MG1655_EA_list, ref_seq = MG1655_seq),
+                             EA_list = EA_list, ref_seq = ref_seq),
                GD = GDtoEA(input$founder_files$name, input$founder_files$datapath,
-                           EA_list = MG1655_EA_list, ref_seq = MG1655_seq),
+                           EA_list = EA_list, ref_seq = ref_seq),
                SUB = SUBtoEA(input$founder_files$name, input$founder_files$datapath,
-                             name_table = name_table, EA_list = MG1655_EA_list))
+                             name_table = name_table, EA_list = EA_list))
       )
     })
 
@@ -216,7 +277,7 @@ mod_data_input_server <- function(id, name_table){
       contentType = "application/zip"
     )
     ## GD examples
-    output$vcf_example <- downloadHandler(
+    output$gd_example <- downloadHandler(
       filename = function() {
         paste("GD_examples", "zip", sep = ".")
       },

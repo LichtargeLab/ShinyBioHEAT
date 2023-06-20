@@ -70,7 +70,8 @@ mod_EA_analysis_ui <- function(id){
 #' EA_analysis Server Functions
 #'
 #' @noRd
-mod_EA_analysis_server <- function(id, processed_evolve, random_bg){
+mod_EA_analysis_server <- function(id, processed_evolve, random_bg,
+                                   ref_df, string_species_id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     # Run EA KS test and frequency based analyses
@@ -78,10 +79,11 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg){
       req(processed_evolve())
       req(random_bg())
       req(input$adj.type)
+      req(ref_df)
       withProgress(
         message = "Analyzing Data",
         EA_Freq(evolve = processed_evolve(), background = random_bg(),
-                adj.method = input$adj.type)
+                adj.method = input$adj.type, ref_df = ref_df)
       )
     })
     observeEvent(input$run_analysis, {
@@ -262,9 +264,9 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg){
       req(gene_rankings_df())
       req(input$string_gene_count)
       gene_count <- input$string_gene_count
-      gene_list <- gene_rankings_df()$locus_tag[which(gene_rankings_df()[[var_match[input$string_rank]]] <= input$string_gene_count)] %>%
+      gene_list <- gene_rankings_df()$string_id[which(gene_rankings_df()[[var_match[input$string_rank]]] <= input$string_gene_count)] %>%
         paste0(., collapse = "%0d")
-      string_api <- paste0("https://string-db.org/api/tsv-no-header/get_link?identifiers=", gene_list, "&species=511145")
+      string_api <- paste0("https://string-db.org/api/tsv-no-header/get_link?identifiers=", gene_list, "&species=", string_species_id)
       string_link <- readLines(string_api)
       shinyjs::js$browseURL(string_link)
     })

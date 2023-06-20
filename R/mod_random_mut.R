@@ -29,16 +29,16 @@ mod_random_mut_ui <- function(id){
                    tags$h4("Simulation settings", style = "margin-top: 0;"),
                    sliderInput(
                      ns("mut"),
-                     label = "Number of simulated random mutations per strain (100-1000)",
-                     value = 100,
-                     min = 100,
-                     max = 1000,
-                     step = 100
+                     label = "Number of simulated random mutations per strain (200-2000)",
+                     value = 1000,
+                     min = 200,
+                     max = 2000,
+                     step = 200
                    ),
                    sliderInput(
                      ns("strain"),
                      label = "Number of simulated strains (1-20)",
-                     value = 1,
+                     value = 10,
                      min = 1,
                      max = 20,
                      step = 1
@@ -60,7 +60,7 @@ mod_random_mut_ui <- function(id){
                      ns("cds_only"), label = "Coding regions only", value =  TRUE
                    ),
                    numericInput(
-                     ns("random_seed"), label = "Set random seed", value = 1000
+                     ns("random_seed"), label = "Set random seed", value = 100
                    )
                ),
                # Example UI
@@ -119,7 +119,9 @@ mod_random_mut_ui <- function(id){
 #' random_mut Server Functions
 #'
 #' @noRd
-mod_random_mut_server <- function(id, name_table){
+mod_random_mut_server <- function(id, name_table, EA_list,
+                                  ref_df, ref_seq, genome_map,
+                                  bg_example){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     bg <- reactiveVal()
@@ -140,16 +142,16 @@ mod_random_mut_server <- function(id, name_table){
           dplyr::mutate(data = purrr::map(
             strain,
             ~ RandomMut(
-              ref_table = dplyr::filter(MG1655_ref, CDS == TRUE),
-              DNA_seq = MG1655_seq,
+              ref_table = dplyr::filter(ref_df, CDS == TRUE),
+              DNA_seq = ref_seq,
               n = input$mut,
               ti = ceiling(input$mut * input$ti_ratio/100),
               cds_only = input$cds_only,
             )
           )) %>%
           tidyr::unnest(cols = c(data)) %>%
-          AnnotateMutations(., .group = "strain") %>%
-          dplyr::mutate(EA = GetEA(locus_tag, SUB, MG1655_EA_list)) %>%
+          AnnotateMutations(., .group = "strain", ref_df = ref_df, genome_map = genome_map) %>%
+          dplyr::mutate(EA = GetEA(locus_tag, SUB, EA_list)) %>%
           dplyr::mutate(
             POS = as.integer(POS),
             AA_pos = as.integer(AA_pos),
@@ -163,7 +165,7 @@ mod_random_mut_server <- function(id, name_table){
     observeEvent(input$load_example, {
       withProgress(
         message = "Loading data",
-        bg(readRDS(app_sys("app/www/MG1655_random_mut.rds")))
+        bg(bg_example)
       )
     })
 
@@ -172,7 +174,8 @@ mod_random_mut_server <- function(id, name_table){
       withProgress(
         message = "Annotating VCF files",
         VCF_df <- VCFtoEA(input$VCF_files$name, input$VCF_files$datapath,
-                          EA_list = MG1655_EA_list, ref_seq = MG1655_seq)
+                          EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                          genome_map = genome_map)
       )
       ref_mismatch_count <- sum(VCF_df$match_reference == FALSE)
       if (ref_mismatch_count != 0) {
@@ -190,7 +193,8 @@ mod_random_mut_server <- function(id, name_table){
       withProgress(
         message = "Annotating GD files",
         GD_df <- GDtoEA(input$GD_files$name, input$GD_files$datapath,
-                        EA_list = MG1655_EA_list, ref_seq = MG1655_seq)
+                        EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                        genome_map = genome_map)
       )
       bg(GD_df)
     })
@@ -200,7 +204,7 @@ mod_random_mut_server <- function(id, name_table){
       withProgress(
         message = "Annotating SUB files",
         SUB_df <- SUBtoEA(input$SUB_files$name, input$SUB_files$datapath,
-                          name_table = name_table, EA_list = MG1655_EA_list)
+                          name_table = name_table, EA_list = EA_list)
       )
       bg(SUB_df)
     })
