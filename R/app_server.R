@@ -86,6 +86,23 @@ app_server <- function(input, output, session) {
     mod_structure_viewer_server("structure", processed_evolve = processed_evolve,
                                 quick_search_output = quick_search_output,
                                 structure_df = structure_df())
+
+
+    # Get the selected genome choice
+    if (input$genome == "MG1655") {
+      selected_genome <- "<i>E. coli</i> MG1655"
+    } else if (input$genome == "REL606") {
+      selected_genome <- "<i>E. coli</i> REL606"
+    } else if (input$genome == "Bsubtilis168") {
+      selected_genome <- "<i>B. subtilis</i> 168"
+    }
+
+    #set id to navbar container to align the selected reference genome
+    shinyjs::runjs("$('#banner').parent().attr('id', 'parent-banner')")
+
+    # After the "Confirm genome" button is clicked
+    shinyjs::html(id = "parent-banner", html = paste("<ul><p id='selected-genome' style='font-weight: bold; margin-top: 15px; text-align: right;'>Reference Genome - ", selected_genome, "</p></ul>"), add = TRUE)
+
   })
 
 }

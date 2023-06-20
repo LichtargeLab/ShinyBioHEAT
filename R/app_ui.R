@@ -14,7 +14,8 @@ app_ui <- function(request) {
     shinyjs::extendShinyjs(text = "shinyjs.browseURL = function(url) {window.open(url,'_blank');}", functions = 'browseURL'),
 
     # Your application UI logic
-    navbarPage(HTML("<em>E. coli</em> driver gene prediction"),
+    navbarPage(HTML("EA driver gene prediction"),
+               id = "banner",
                theme = shinythemes::shinytheme("cerulean"),
                mod_intro_ui("intro"),
                tabPanel("Driver Gene Analysis",
