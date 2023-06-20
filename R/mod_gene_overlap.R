@@ -48,7 +48,7 @@ mod_gene_overlap_ui <- function(id){
 #' gene_overlap Server Functions
 #'
 #' @noRd
-mod_gene_overlap_server <- function(id, gene_rankings){
+mod_gene_overlap_server <- function(id, gene_rankings, string_species_id){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     venn_data <- readRDS(app_sys("app/www/venn_data.rds"))
@@ -129,7 +129,7 @@ mod_gene_overlap_server <- function(id, gene_rankings){
       } else {
         gene_list <- selected_genes()$string_id %>%
           paste0(., collapse = "%0d")
-        string_api <- paste0("https://string-db.org/api/tsv-no-header/get_link?identifiers=", gene_list, "&species=511145")
+        string_api <- paste0("https://string-db.org/api/tsv-no-header/get_link?identifiers=", gene_list, "&species=", string_species_id)
         string_link <- readLines(string_api)
         shinyjs::js$browseURL(string_link)
       }

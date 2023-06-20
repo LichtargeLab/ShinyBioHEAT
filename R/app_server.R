@@ -39,6 +39,7 @@ app_server <- function(input, output, session) {
   EA_list <- reactiveVal()
   structure_df <- reactiveVal()
   bg_example <- reactiveVal()
+  string_species_id <- reactiveVal()
 
   observeEvent(input$confirm_genome, {
     ref_df_file <- paste0("app/www/", input$genome, "/", input$genome, "_ref.rds")
@@ -61,6 +62,11 @@ app_server <- function(input, output, session) {
         bg_example(readRDS(app_sys(bg_example_file)))
       }
     )
+    if (input$genome == "Bsubtilis168") {
+      string_species_id("224308")
+    } else if (input$genome %in% c("MG1655", "REL606")) {
+      string_species_id("511145")
+    }
     removeModal()
     processed_evolve <- mod_data_input_server("input_page", name_table = name_table(),
                                               EA_list = EA_list(), ref_df = ref_df(),
@@ -71,8 +77,10 @@ app_server <- function(input, output, session) {
                                        ref_seq = ref_seq(), genome_map = genome_map(),
                                        bg_example = bg_example())
     gene_rankings <- mod_EA_analysis_server("EA_analysis", processed_evolve = processed_evolve,
-                                            random_bg = random_bg, ref_df = ref_df())
-    mod_gene_overlap_server("gene_overlap", gene_rankings = gene_rankings)
+                                            random_bg = random_bg, ref_df = ref_df(),
+                                            string_species_id = string_species_id())
+    mod_gene_overlap_server("gene_overlap", gene_rankings = gene_rankings,
+                            string_species_id = string_species_id())
     quick_search_output <- mod_EA_search_server("search", name_table = name_table(),
                                                 EA_list = EA_list(), strain = reactive(input$genome))
     mod_structure_viewer_server("structure", processed_evolve = processed_evolve,
