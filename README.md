@@ -10,8 +10,10 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 <!-- badges: end -->
 
 The goal of ShinyBioHEAT is to provide a shiny interface to allow users
-to predict phenotype driver gene in lab evolved *E. coli* strains using
-Evolutionary Action. A live version of the application is hosted at
+to predict phenotype driver gene in lab evolved *E. coli* and *B.
+subtilis* using Evolutionary Action. It currently supports 3 reference
+genomes including: *E. coli* MG1655, *E.coli* REL606 and *B. subtilis*
+168. A live version of the application is hosted at
 <http://bioheat.lichtargelab.org>. The application contains 3 modules:
 
 1.  **Driver Gene Analysis**: Two orthogonal approaches, EA integration
@@ -21,7 +23,7 @@ Evolutionary Action. A live version of the application is hosted at
     functional impact of protein coding mutations
     ([ref](https://genome.cshlp.org/content/24/12/2050.long)). This
     module allows user to quickly search the EA score of any given
-    mutations in the *E. coli* MG1655 genome.
+    mutations in the selected reference genome.
 3.  **Structure Viewer**: Mapping mutation data and EA/ET scores to
     AlphaFold structures.
 
