@@ -191,9 +191,11 @@ mod_data_input_server <- function(id, name_table, EA_list,
         message = "Annotating founder strains",
         switch(input$input_type,
                VCF = VCFtoEA(input$founder_files$name, input$founder_files$datapath,
-                             EA_list = EA_list, ref_seq = ref_seq),
+                             EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                             genome_map = genome_map),
                GD = GDtoEA(input$founder_files$name, input$founder_files$datapath,
-                           EA_list = EA_list, ref_seq = ref_seq),
+                           EA_list = EA_list, ref_seq = ref_seq, ref_df = ref_df,
+                           genome_map = genome_map),
                SUB = SUBtoEA(input$founder_files$name, input$founder_files$datapath,
                              name_table = name_table, EA_list = EA_list))
       )
