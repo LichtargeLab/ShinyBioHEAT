@@ -140,42 +140,54 @@ mod_structure_viewer_server <- function(id, processed_evolve, quick_search_outpu
       id <- isolate(input$prot_id)
       AF_ET_sel <- structure_df[structure_df[[filter_var]] == id,]
       AF_url <- AF_ET_sel$AF_url[1]
-      AF_pdb <- readLines(AF_url, warn = FALSE)
-      AF_pLDDT <- GetpLDDT(AF_pdb) %>%
-        dplyr::select(AA.POS = POS, pLDDT)
-      ET_df <- data.frame(ET = AF_ET_sel$ET_vec[[1]]) %>%
-        dplyr::mutate(AA.POS = 1:dplyr::n())
-      mut_data <- switch(isolate(input$mut_input),
-                         "no" = dplyr::tibble(gene = character(), locus_tag = character(),
-                                       EA = numeric(), SUB = character()),
-                         "EA_analysis" = processed_evolve(),
-                         "quick_search" = quick_search_output())
-      color_df <- mut_data[mut_data[[filter_var]] == id,] %>%
-        dplyr::mutate(AA.POS = stringr::str_sub(SUB, start = 2, end = -2)) %>%
-        dplyr::mutate(AA.POS = as.numeric(AA.POS)) %>%
-        dplyr::mutate(EA = as.numeric(EA)) %>%
-        dplyr::filter(!is.na(EA)) %>%
-        dplyr::group_by(locus_tag, AA.POS) %>%
-        dplyr::summarize(mutation_count = dplyr::n(),
-                         unique_mutation_count = length(unique(SUB)),
-                         sumEA = sum(EA), .groups = "drop") %>%
-        dplyr::ungroup() %>%
-        dplyr::left_join(ET_df, ., by = c("AA.POS")) %>%
-        dplyr::left_join(AF_pLDDT, by = c("AA.POS")) %>%
-        tidyr::replace_na(list(mutation_count = 0,
-                               unique_mutation_count = 0,
-                               sumEA = 0)) %>%
-        ColorMutations(., ET_color = input$ET_color) %>%
-        dplyr::select(-locus_tag)
-      ET_color <- paste0('"', color_df$ET_color, '"', collapse = ",")
-      sumEA_color <- paste0('"', color_df$sumEA_color, '"', collapse = ",")
-      unique_mutation_count_color <- paste0('"', color_df$unique_mutation_count_color, '"', collapse = ",")
-      mut_resi <- color_df$AA.POS[which(color_df$unique_mutation_count > 0)]
-      para <- list(AF_url, AF_pdb, color_df, ET_color, sumEA_color, unique_mutation_count_color,
-                   mut_resi)
-      names(para) <- c("AF_url", "AF_pdb", "color_df", "ET_color", "sumEA_color", "unique_mutation_count_color",
-                       "mut_resi")
-      para
+      if (is.na(AF_url)) {
+        showModal(modalDialog(
+          title = "Check input protein/locus tag",
+          div(tags$p("Selected protein/locus tag is not included in the AlphaFold database."),
+              tags$p("Currently structure viewer only support AlphaFold structure with 100%
+                      match to the reference sequence."))
+        ))
+        para <- NA
+        para
+      } else {
+        AF_pdb <- readLines(AF_url, warn = FALSE)
+        AF_pLDDT <- GetpLDDT(AF_pdb) %>%
+          dplyr::select(AA.POS = POS, pLDDT)
+        ET_df <- data.frame(ET = AF_ET_sel$ET_vec[[1]]) %>%
+          dplyr::mutate(AA.POS = 1:dplyr::n())
+        mut_data <- switch(isolate(input$mut_input),
+                           "no" = dplyr::tibble(gene = character(), locus_tag = character(),
+                                                EA = numeric(), SUB = character()),
+                           "EA_analysis" = processed_evolve(),
+                           "quick_search" = quick_search_output())
+        color_df <- mut_data[mut_data[[filter_var]] == id,] %>%
+          dplyr::mutate(AA.POS = stringr::str_sub(SUB, start = 2, end = -2)) %>%
+          dplyr::mutate(AA.POS = as.numeric(AA.POS)) %>%
+          dplyr::mutate(EA = as.numeric(EA)) %>%
+          dplyr::filter(!is.na(EA)) %>%
+          dplyr::group_by(locus_tag, AA.POS) %>%
+          dplyr::summarize(mutation_count = dplyr::n(),
+                           unique_mutation_count = length(unique(SUB)),
+                           sumEA = sum(EA), .groups = "drop") %>%
+          dplyr::ungroup() %>%
+          dplyr::left_join(ET_df, ., by = c("AA.POS")) %>%
+          dplyr::left_join(AF_pLDDT, by = c("AA.POS")) %>%
+          tidyr::replace_na(list(mutation_count = 0,
+                                 unique_mutation_count = 0,
+                                 sumEA = 0)) %>%
+          ColorMutations(., ET_color = input$ET_color) %>%
+          dplyr::select(-locus_tag)
+        ET_color <- paste0('"', color_df$ET_color, '"', collapse = ",")
+        sumEA_color <- paste0('"', color_df$sumEA_color, '"', collapse = ",")
+        unique_mutation_count_color <- paste0('"', color_df$unique_mutation_count_color, '"', collapse = ",")
+        mut_resi <- color_df$AA.POS[which(color_df$unique_mutation_count > 0)]
+        para <- list(AF_url, AF_pdb, color_df, ET_color, sumEA_color, unique_mutation_count_color,
+                     mut_resi)
+        names(para) <- c("AF_url", "AF_pdb", "color_df", "ET_color", "sumEA_color", "unique_mutation_count_color",
+                         "mut_resi")
+        para
+      }
+
     })
 
     observeEvent(input$load_structure, {
@@ -216,6 +228,7 @@ mod_structure_viewer_server <- function(id, processed_evolve, quick_search_outpu
     })
 
     output$structure <- r3dmol::renderR3dmol({
+      req(structure_para_list())
       style_func <- switch(input$rep_style,
                            "cartoon" = r3dmol::m_style_cartoon,
                            "spheres" = r3dmol::m_style_sphere,
@@ -227,38 +240,38 @@ mod_structure_viewer_server <- function(id, processed_evolve, quick_search_outpu
       m1 <- AF_structure %>%
         r3dmol::m_set_style(style = style_func(
           colorfunc = paste0("
-        function(atom) {
-          const color = [", structure_para_list()[["ET_color"]], "];
-          return color[atom.resi-1];
-        }"
+          function(atom) {
+            const color = [", structure_para_list()[["ET_color"]], "];
+            return color[atom.resi-1];
+          }"
           ))) # js indexing from 0
 
       m2 <- AF_structure %>%
         r3dmol::m_set_style(style = style_func(colorfunc = "
-        function(atom) {
-          if (atom.b >= 90) {return '#0153d6'};
-          if (atom.b < 90 && atom.b >= 70) {return '#65cbf3'};
-          if (atom.b < 70 && atom.b >= 50) {return '#fcdb4b'};
-          if (atom.b < 50) {return '#f17c42'};
-          return 'white';
-        }"))
+          function(atom) {
+            if (atom.b >= 90) {return '#0153d6'};
+            if (atom.b < 90 && atom.b >= 70) {return '#65cbf3'};
+            if (atom.b < 70 && atom.b >= 50) {return '#fcdb4b'};
+            if (atom.b < 50) {return '#f17c42'};
+            return 'white';
+          }"))
 
       m3 <- AF_structure %>%
         r3dmol::m_set_style(style = style_func(
           colorfunc = paste0("
-        function(atom) {
-          const color = [", structure_para_list()[["sumEA_color"]], "];
-          return color[atom.resi-1];
-        }"
+          function(atom) {
+            const color = [", structure_para_list()[["sumEA_color"]], "];
+            return color[atom.resi-1];
+          }"
           )))
 
       m4 <- AF_structure %>%
         r3dmol::m_set_style(style = style_func(
           colorfunc = paste0("
-        function(atom) {
-          const color = [", structure_para_list()[["unique_mutation_count_color"]], "];
-          return color[atom.resi-1];
-        }"
+          function(atom) {
+            const color = [", structure_para_list()[["unique_mutation_count_color"]], "];
+            return color[atom.resi-1];
+          }"
           )))
 
       if(input$label_mut == TRUE & isolate(input$mut_input) != "no") {
