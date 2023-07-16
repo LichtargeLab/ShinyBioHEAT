@@ -14,6 +14,8 @@ GraphWholeGenomeEADist <- function(df, exp_fit = TRUE, title = NULL) {
       "nonsynonymous"
     )) %>%
     dplyr::mutate(SNP.type = factor(SNP.type, levels = c("nonsense", "nonsynonymous")))
+
+
   output_plot <- ggplot2::ggplot(workdf) +
     ggplot2::geom_histogram(
       ggplot2::aes(x = EA, y = ggplot2::after_stat(count), fill = SNP.type),
@@ -26,16 +28,20 @@ GraphWholeGenomeEADist <- function(df, exp_fit = TRUE, title = NULL) {
                                  breaks = c("nonsense", "nonsynonymous"),
                                  drop = FALSE) +
     ggplot2::scale_y_continuous("Count", breaks = integer_breaks) +
-    ggplot2::labs(x = "EA bins") +
+    ggplot2::labs(x = "EA bins", fill = "SNP type") +
     ggplot2::theme_classic() +
     ggplot2::theme(
       title = ggplot2::element_text(size = 16, face = "bold"),
       axis.text = ggplot2::element_text(size = 12, face = "bold"),
       axis.title = ggplot2::element_text(size = 14, face = "bold"),
       legend.text = ggplot2::element_text(size = 12),
-      legend.title = ggplot2::element_text(size = 14)
+      legend.title = ggplot2::element_text(size = 14),
+      legend.position = "bottom",
+      plot.caption = ggplot2::element_text(hjust = 0.5),
+      aspect.ratio = 0.8
     ) +
     ggplot2::ggtitle(title)
+
   if(exp_fit == TRUE) {
     fit_para <- workdf %>%
       dplyr::filter(SNP.type == "nonsynonymous") %>%
@@ -52,9 +58,9 @@ GraphWholeGenomeEADist <- function(df, exp_fit = TRUE, title = NULL) {
     } else {
       fit_text <- "Can't fit exponential decay with non linear regression"
     }
-    output_plot <- cowplot::ggdraw(output_plot) +
-      cowplot::draw_label(fit_text, color = "black", size = 14,
-                          x = 0.95, y = 0.95, hjust = 1, vjust = 1)
+
+    output_plot <- output_plot +
+      ggplot2::labs(x = "EA bins", fill = "SNP type", caption = fit_text)
   }
   return(output_plot)
 }

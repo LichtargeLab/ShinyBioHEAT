@@ -105,8 +105,12 @@ mod_random_mut_ui <- function(id){
              mainPanel(
                width = 9,
                fluidRow(
-                 column(6,
-                        plotOutput(outputId = ns("bg_plot"))),
+                 column(6, align = "center",
+                        plotOutput(outputId = ns("bg_plot"),
+                                   height = "450px",
+                                   width = "100%"),
+                        shinyjs::hidden(downloadButton(outputId = ns("download_bg_hist"),
+                                                       label = "Download EA distribution plot"))),
                  column(6,
                         align = "center",
                         DT::dataTableOutput(outputId = ns("bg_nonsyno")),
@@ -224,11 +228,34 @@ mod_random_mut_server <- function(id, name_table, EA_list,
         dplyr::select(strain, gene, locus_tag, SUB, EA) %>%
         DisplayDT(download.name = "coding_mutations_in_random_background")
     })
-    output$bg_plot <- renderPlot({
-      req(bg_filtered())
+
+    # Make EA histogram a reactive object, which can
+    # be used in rendering the plot and downloading
+    bg_hist <- reactive({
+      req(bg_filtered() )
       bg_filtered() %>%
         GraphWholeGenomeEADist()
     })
+
+    output$bg_plot <- renderPlot({
+      bg_hist()
+    })
+
+    # Show download histogram button after figure is plotted
+    observeEvent(bg_hist(), {
+      req(bg_hist())
+      shinyjs::show("download_bg_hist")
+    })
+
+    output$download_bg_hist <- downloadHandler(
+      filename = function(){
+        paste("background_EA_distribution", ".", "pdf",  sep="")},
+      content = function(file){
+        ggplot2::ggsave(file, plot=bg_hist(),width = 5, height = 4,
+                        unit = "in", device = "pdf")
+      }
+    )
+
     output$download_ui <- renderUI({
       req(bg_filtered())
       downloadButton(session$ns("download_bg_details"),

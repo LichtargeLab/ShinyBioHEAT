@@ -26,8 +26,12 @@ mod_data_input_ui <- function(id){
              mainPanel(
                width = 9,
                fluidRow(
-                 column(6,
-                        plotOutput(outputId = ns("evolve_plot"))),
+                 column(6, align = "center",
+                        plotOutput(outputId = ns("evolve_plot"),
+                                   height = "450px",
+                                   width = "100%"),
+                        shinyjs::hidden(downloadButton(outputId = ns("download_hist"),
+                                                       label = "Download EA distribution plot"))),
                  column(6, align = "center",
                         fluidRow(align = "left",
                                  shinyjs::hidden(textOutput(outputId = "ref_check")),
@@ -230,12 +234,33 @@ mod_data_input_server <- function(id, name_table, EA_list,
         dplyr::select(strain, gene, locus_tag, SUB, EA) %>%
         DisplayDT(download.name = "coding_mutations_in_evolve_strains")
     })
-    output$evolve_plot <- renderPlot({
+
+    # Make EA histogram a reactive object, which can
+    # be used in rendering the plot and downloading
+    evolve_hist <- reactive({
       req(evolve_data_filtered())
       evolve_data_filtered() %>%
         GraphWholeGenomeEADist()
     })
 
+    output$evolve_plot <- renderPlot({
+      evolve_hist()
+    })
+
+    # Show download histogram button after figure is plotted
+    observeEvent(evolve_hist(), {
+      req(evolve_hist())
+      shinyjs::show("download_hist")
+    })
+
+    output$download_hist <- downloadHandler(
+      filename = function(){
+        paste("evolved_EA_distribution", ".", "pdf",  sep="")},
+      content = function(file){
+        ggplot2::ggsave(file, plot=evolve_hist(),width = 5, height = 4,
+                        unit = "in", device = "pdf")
+      }
+    )
 
     ## Ref check and Conditions for hide/show download button
     observeEvent(input$submit_files, {
