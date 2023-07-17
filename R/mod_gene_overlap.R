@@ -36,6 +36,10 @@ mod_gene_overlap_ui <- function(id){
                      click = ns("venn_plot_click")
                    )
                  ),
+                 shinyjs::hidden(downloadButton(outputId = ns("download_overlap_plot"),
+                                                label = "Download Venn diagram")),
+                 tags$br(),
+                 tags$br(),
                  verbatimTextOutput(ns("set_info"))
                ),
                column(6,
@@ -58,11 +62,12 @@ mod_gene_overlap_server <- function(id, gene_rankings, string_species_id){
       req(gene_rankings())
       set_data(GenelistToSets(gene_rankings(),
                               top = floor(input$venn_cutoff/100 * nrow(gene_rankings()))))
-      selected_genes(dplyr::filter(set_data(), set %in% selected_sets()) )
+      selected_genes(dplyr::filter(set_data(), set %in% selected_sets()))
+      shinyjs::show("download_overlap_plot")
     })
     selected_sets <- reactiveVal()
     selected_sets(c("empty", "set1&2&3"))
-    output$venn_plot <- renderPlot({
+    overlap_plot <- reactive({
       req(selected_sets())
       req(set_data())
       venn_text <- GetVenn(set_data(), venn_data$text_pos)
@@ -87,6 +92,20 @@ mod_gene_overlap_server <- function(id, gene_rankings, string_species_id){
         ggplot2::theme_void()
     })
 
+    output$venn_plot <- renderPlot({
+      req(overlap_plot())
+      overlap_plot()
+    })
+
+    output$download_overlap_plot <- downloadHandler(
+      filename = function(){
+        paste("overlapping_genes", ".", "pdf",  sep="")},
+      content = function(file){
+        ggplot2::ggsave(file, plot=overlap_plot(),width = 5.5, height = 5.5,
+                        unit = "in", device = "pdf")
+      }
+    )
+
     output$set_info <- renderText({
       req(set_data())
       req(selected_genes())
@@ -102,7 +121,7 @@ mod_gene_overlap_server <- function(id, gene_rankings, string_species_id){
       req(selected_genes())
       selected_genes() %>%
         dplyr::select(-set) %>%
-        DisplayDT(download.name = "test")
+        DisplayDT(download.name = "selected_genes")
     })
 
     observeEvent(input$venn_plot_click, {
