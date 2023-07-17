@@ -53,10 +53,18 @@ mod_EA_analysis_ui <- function(id){
                      outputId = ns("ranking_plot"),
                      click = ns("plot_click")
                    )
-                 )
+                 ),
+                 shinyjs::hidden(downloadButton(outputId = ns("download_gene_rank_plot"),
+                                                label = "Download gene rankings plot")),
+                 tags$br(),
+                 tags$br()
                ),
-               column(6,
-                      plotOutput(outputId = ns("gene_plot")))),
+               column(6, align = "center",
+                      plotOutput(outputId = ns("gene_plot")),
+                      shinyjs::hidden(downloadButton(outputId = ns("download_gene_hist"),
+                                                     label = "Download EA distribution plot")),
+                      tags$br(),
+                      tags$br())),
                fluidRow(
                  column(6,
                         DT::dataTableOutput(outputId = ns("gene_rankings"))),
@@ -131,7 +139,9 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg,
     })
     var_match <- c("EAKS_rank", "EAsum_rank", "Freq_rank")
     names(var_match) <- c("EA_KS rank", "EA_sum rank", "Frequency rank")
-    output$ranking_plot <- renderPlot({
+
+    # Save gene ranking scatter plot as reactive object
+    gene_scatter <- reactive({
       req(gene_rankings_df())
       req(input$scale.type)
       output.plot <- ggplot2::ggplot() +
@@ -192,6 +202,26 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg,
       output.plot
     })
 
+    # Render gene ranking plot
+    output$ranking_plot <- renderPlot({
+      gene_scatter()
+    })
+
+    # Show download gene rank button after figure is plotted
+    observeEvent(gene_scatter(), {
+      req(gene_scatter())
+      shinyjs::show("download_gene_rank_plot")
+    })
+
+    output$download_gene_rank_plot <- downloadHandler(
+      filename = function(){
+        paste("gene_rank_plot", ".", "pdf",  sep="")},
+      content = function(file){
+        ggplot2::ggsave(file, plot=gene_scatter(),width = 4, height = 4,
+                        unit = "in", device = "pdf")
+      }
+    )
+
     proxy <- DT::dataTableProxy("gene_rankings")
     observeEvent(input$plot_click, {
       # The reverse log scale used here is a custom one, so nearPoints function
@@ -223,7 +253,8 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg,
         DT::selectPage((which(input$gene_rankings_rows_all == click_id)-1)%/% input$gene_rankings_state$length + 1)
     })
 
-    output$gene_plot <- renderPlot({
+    # save gene EA histogram as reactive object
+    gene_hist <- reactive({
       req(length(input$gene_rankings_rows_selected) > 0)
       if (length(input$gene_rankings_rows_selected) > 0) {
         GraphGeneEA(
@@ -244,6 +275,27 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg,
           )
       }
     })
+
+    # render gene EA histogram
+    output$gene_plot <- renderPlot({
+      req(gene_hist())
+      gene_hist()
+    })
+
+    observeEvent(gene_hist(), {
+      req(gene_hist())
+      shinyjs::show("download_gene_hist")
+    })
+
+    output$download_gene_hist <- downloadHandler(
+      filename = function(){
+        paste("EA_distribution_", gene_rankings_df()$locus_tag[input$gene_rankings_rows_selected],
+              ".", "pdf",  sep="")},
+      content = function(file){
+        ggplot2::ggsave(file, plot=gene_hist(),width = 5, height = 4,
+                        unit = "in", device = "pdf")
+      }
+    )
 
     output$Stringdb <- renderUI({
       req(gene_rankings_df())
