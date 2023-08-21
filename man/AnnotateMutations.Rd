@@ -16,7 +16,7 @@ AnnotateMutations(
 required. Can be generated with ReadVCF function.}
 
 \item{ref_df}{A tibble storing the genomic information of the reference genome. Can be generated
-with ExtractGBK function. Default value is MG1655_ref.}
+with ExtractGBK function.}
 
 \item{genome_map}{A feature map list to quick trace the feature ids for given positions.
 Can be generated using GenerateGenomeMapping function.}
