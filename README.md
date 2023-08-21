@@ -44,6 +44,11 @@ run_app()
 
 ## Related References
 
+[Wang C, Govindarajan H, Katsonis P, Lichtarge O. ShinyBioHEAT: an
+interactive shiny app to identify phenotype driver genes in E.coli and
+B.subtilis. Bioinformatics. 2023 Aug
+1;39(8):btad467.](https://academic.oup.com/bioinformatics/article/39/8/btad467/7234070)
+
 [Marciano DC, Wang C, Hsu TK, Bourquard T, Atri B, Nehring RB, Abel NS,
 Bowling EA, Chen TJ, Lurie PD, Katsonis P, Rosenberg SM, Herman C,
 Lichtarge O. Evolutionary action of mutations reveals antimicrobial

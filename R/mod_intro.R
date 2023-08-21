@@ -270,6 +270,13 @@ mod_intro_ui <- function(id){
                       tags$h3(tags$b("References")),
                       tags$div(
                         style={'padding-left: 20px'},
+                        tags$div("Wang C, Govindarajan H, Katsonis P, Lichtarge O.", tags$br(),
+                                 tags$b("ShinyBioHEAT: an interactive shiny app to identify phenotype driver genes in E.coli and B.subtilis."), tags$br(),
+                                 "Bioinformatics. 2023 Aug 1;39(8):btad467.",
+                                 "[",
+                                 tags$a("link", href="https://academic.oup.com/bioinformatics/article/39/8/btad467/7234070",  target="_blank", .noWS = "outside"),
+                                 "]"),
+                        tags$br(),
                         tags$div("Marciano DC, Wang C, Hsu TK, Bourquard T, Atri B, Nehring RB, Abel NS, Bowling EA, Chen TJ, Lurie PD, Katsonis P, Rosenberg SM, Herman C, Lichtarge O.", tags$br(),
                                  tags$b("Evolutionary action of mutations reveals antimicrobial resistance genes in Escherichia coli."), tags$br(),
                                  "Nat Commun. 2022 Jun 9;13(1):3189.",
