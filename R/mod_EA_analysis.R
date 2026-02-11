@@ -196,8 +196,14 @@ mod_EA_analysis_server <- function(id, processed_evolve, random_bg,
           ggplot2::scale_x_reverse() +
           ggplot2::scale_y_reverse(),
         log10 = output.plot +
-          ggplot2::scale_x_continuous(trans = reverselog_trans(10)) +
-          ggplot2::scale_y_continuous(trans = reverselog_trans(10))
+          ggplot2::scale_x_continuous(trans = reverselog_trans(10),
+                                      breaks = 10^c(0:10)) +
+          ggplot2::scale_y_continuous(trans = reverselog_trans(10),
+                                      breaks = 10^c(0:10)) +
+          ggplot2::guides(y = ggplot2::guide_axis_logticks(cap = "upper",
+                                                           expanded = FALSE),
+                          x = ggplot2::guide_axis_logticks(cap = "upper",
+                                                           expanded = FALSE))
       )
       output.plot
     })
